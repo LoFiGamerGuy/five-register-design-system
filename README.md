@@ -241,6 +241,7 @@ This design system is part of a small family of public reference material. The s
 - **[council-of-five](https://github.com/LoFiGamerGuy/council-of-five)** &middot; [live →](https://lofigamerguy.github.io/council-of-five/) — Multi-perspective decision framework. Useful when designing the system *behind* the artifacts this design system templates. CC BY 4.0.
 - **[reference-library-methodology](https://github.com/LoFiGamerGuy/reference-library-methodology)** &middot; [live →](https://lofigamerguy.github.io/reference-library-methodology/) — System for building a queryable, AI-readable technical reference library. MIT licensed.
 - **[alpha-reader-toolkit](https://github.com/LoFiGamerGuy/alpha-reader-toolkit)** &middot; [live →](https://lofigamerguy.github.io/alpha-reader-toolkit/) — Pipeline for honest alpha-reader feedback on fiction manuscripts using LLM personas. MIT licensed.
+- **[cross-platform-ai-dev-env-playbook](https://github.com/LoFiGamerGuy/cross-platform-ai-dev-env-playbook)** &middot; [live →](https://lofigamerguy.github.io/cross-platform-ai-dev-env-playbook/) — Concrete operational playbook for cross-platform agentic AI dev environments. CC BY 4.0.
 - **[terminal-stack](https://github.com/LoFiGamerGuy/terminal-stack)** — Opinionated terminal kit for Git Bash on Windows. 24 themes (including several from this design system's palette), modern Unix tools, fzf widgets.
 - **[dotfiles](https://github.com/LoFiGamerGuy/dotfiles)** — Personal dotfiles. Shell config, prompt, tool integrations. Idempotent installer.
 
