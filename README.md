@@ -235,9 +235,10 @@ The system is opinionated; contributions that introduce new registers, palettes,
 
 ## Related public repos
 
-This design system is part of a small family of public reference material. The system here gives you the *artifacts*; the others document the *practice* and the *infrastructure*.
+This design system is part of a small family of public reference material. The system here gives you the *artifacts*; the others document the *practice*, the *infrastructure*, and complementary *frameworks*.
 
 - **[share-ai-engineering-patterns](https://github.com/LoFiGamerGuy/share-ai-engineering-patterns)** — Practitioner's reference for building with AI agents: patterns, infrastructure, tradeoffs. The leaders memo and catalogue front-page for *that* repo were built using *this* design system. CC BY 4.0.
+- **[council-of-five](https://github.com/LoFiGamerGuy/council-of-five)** — Multi-perspective decision framework. Useful when designing the system *behind* the artifacts this design system templates. CC BY 4.0.
 - **[terminal-stack](https://github.com/LoFiGamerGuy/terminal-stack)** — Opinionated terminal kit for Git Bash on Windows. 24 themes (including several from this design system's palette), modern Unix tools, fzf widgets.
 - **[dotfiles](https://github.com/LoFiGamerGuy/dotfiles)** — Personal dotfiles. Shell config, prompt, tool integrations. Idempotent installer.
 
