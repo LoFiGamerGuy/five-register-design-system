@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Index — Personal Template System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="base.css">
+<style>
+  body { padding: 0; }
+  .lobby { max-width: 1240px; margin: 0 auto; padding: var(--space-9) var(--space-7); }
+
+  .hero {
+    border-top: 2px solid var(--sumi);
+    border-bottom: 1px solid var(--sumi);
+    padding: var(--space-7) 0;
+    margin-bottom: var(--space-9);
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: var(--space-8);
+    align-items: end;
+  }
+  .hero h1 {
+    font-family: var(--font-display);
+    font-style: italic; font-weight: 300;
+    font-size: clamp(48px, 7vw, 88px);
+    line-height: 0.96;
+    letter-spacing: -0.025em;
+    color: var(--sumi);
+  }
+  .hero h1 .acc { color: var(--copper-deep); }
+  .hero__meta {
+    display: flex; flex-direction: column; gap: var(--space-3);
+    font-family: var(--font-mono); font-size: var(--fs-2xs);
+    text-transform: uppercase; letter-spacing: var(--tracking-caps);
+    color: var(--fg-3);
+  }
+  .hero__meta strong { color: var(--fg); font-weight: 400; }
+
+  .register { margin-top: var(--space-9); }
+  .register__h {
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-bottom: 1px solid var(--sumi);
+    padding-bottom: var(--space-3);
+    margin-bottom: var(--space-6);
+  }
+  .register__h h2 {
+    font-family: var(--font-display);
+    font-style: italic; font-weight: 400;
+    font-size: var(--fs-2xl);
+    color: var(--sumi);
+    letter-spacing: -0.015em;
+    white-space: nowrap;
+  }
+  .register__motto {
+    font-family: var(--font-display);
+    font-style: italic; font-weight: 300;
+    font-size: var(--fs-lg);
+    color: var(--fg-2);
+    margin-bottom: var(--space-6);
+    max-width: 64ch;
+  }
+
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-5);
+  }
+  .cards--4 { grid-template-columns: repeat(4, 1fr); }
+  .cards--2 { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 1100px) { .cards--4 { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 900px) { .cards { grid-template-columns: 1fr; } .cards--4, .cards--2 { grid-template-columns: 1fr; } }
+  .card {
+    display: flex; flex-direction: column;
+    border: 1px solid var(--rule);
+    background: var(--bone-2);
+    padding: var(--space-5);
+    text-decoration: none;
+    color: inherit;
+    transition: all var(--dur-base) var(--ease);
+    min-height: 280px;
+  }
+  .card:hover {
+    border-color: var(--copper-deep);
+    background: var(--bone);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
+  }
+  .card__num {
+    font-family: var(--font-mono); font-size: var(--fs-2xs);
+    color: var(--copper-deep);
+    letter-spacing: var(--tracking-caps);
+    margin-bottom: var(--space-3);
+  }
+  .card__name {
+    font-family: var(--font-display);
+    font-style: italic; font-weight: 400;
+    font-size: var(--fs-2xl);
+    color: var(--sumi);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    margin-bottom: var(--space-2);
+  }
+  .card__type {
+    font-family: var(--font-mono); font-size: var(--fs-2xs);
+    text-transform: uppercase; letter-spacing: var(--tracking-caps);
+    color: var(--fg-3);
+    margin-bottom: var(--space-4);
+  }
+  .card__desc {
+    font-size: var(--fs-sm); line-height: 1.55;
+    color: var(--fg-2);
+    flex: 1;
+  }
+  .card__open {
+    margin-top: var(--space-4);
+    font-family: var(--font-mono); font-size: var(--fs-2xs);
+    text-transform: uppercase; letter-spacing: var(--tracking-caps);
+    color: var(--copper-deep);
+    display: flex; justify-content: space-between;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--rule);
+  }
+
+  /* Genkan register cards — soul-on-software, slightly more product */
+  .cards--genkan .card { background: var(--bone); }
+  .cards--genkan .card__num { color: var(--brass); }
+
+  /* Hiroma register cards — the great room, synthesis */
+  .cards--hiroma .card { background: var(--bone-2); border-color: var(--sumi); }
+  .cards--hiroma .card:hover { border-color: var(--copper-deep); background: var(--bone); }
+  .cards--hiroma .card__num { color: var(--sumi); }
+
+  /* Evening register cards — dark, lamp-lit */
+  .cards--evening { padding: var(--space-7); margin: 0 calc(-1 * var(--space-7)); background: #14101A; }
+  .cards--evening .card { background: #1A1424; border-color: #2A2236; }
+  .cards--evening .card:hover { background: #20182C; border-color: #C9A878; box-shadow: 0 4px 16px rgba(0,0,0,0.45); }
+  .cards--evening .card__num { color: #C9A878; }
+  .cards--evening .card__name { color: #F4ECDC; }
+  .cards--evening .card__type { color: #847E72; }
+  .cards--evening .card__desc { color: #C8BFB0; }
+  .cards--evening .card__open { color: #C9A878; border-top-color: #2A2236; }
+
+  /* Cockpit register cards */
+  .cards--cockpit { background: var(--shou); padding: var(--space-7); margin: 0 calc(-1 * var(--space-7)); }
+  .cards--cockpit .card { background: #15181B; border-color: #2A2F35; }
+  .cards--cockpit .card:hover {
+    background: #1C2024;
+    border-color: var(--champagne);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+  .cards--cockpit .card__num { color: var(--champagne); }
+  .cards--cockpit .card__name { color: #E8E4DA; font-style: normal; font-family: var(--font-body); font-size: var(--fs-xl); font-weight: 500; letter-spacing: -0.01em; }
+  .cards--cockpit .card__type { color: #847E72; }
+  .cards--cockpit .card__desc { color: #B8B2A4; font-family: var(--font-mono); font-size: var(--fs-xs); }
+  .cards--cockpit .card__open { color: var(--champagne); border-top-color: #2A2F35; }
+
+  .files { margin-top: var(--space-9); padding-top: var(--space-6); border-top: 1px solid var(--rule); }
+  .files h3 {
+    font-family: var(--font-mono); font-size: var(--fs-2xs);
+    text-transform: uppercase; letter-spacing: var(--tracking-caps);
+    color: var(--fg-3); margin-bottom: var(--space-4);
+  }
+  .files__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-2) var(--space-7);
+    font-family: var(--font-mono); font-size: var(--fs-sm);
+  }
+  .files__grid a {
+    display: flex; justify-content: space-between;
+    padding: var(--space-2) 0;
+    border-bottom: 1px dotted var(--rule);
+    color: var(--fg-2);
+  }
+  .files__grid a:hover { color: var(--copper-deep); }
+  .files__grid a span { color: var(--fg-3); }
+
+  .footer-rule { margin-top: var(--space-10); padding-top: var(--space-5); border-top: 1px solid var(--sumi); }
+
+  .tag-soul, .tag-cockpit, .tag-genkan, .tag-hiroma, .tag-evening {
+    font-family: var(--font-mono); font-size: var(--fs-2xs);
+    text-transform: uppercase; letter-spacing: var(--tracking-caps);
+    padding: 4px 10px;
+  }
+  .tag-soul { background: var(--copper-deep); color: var(--bone); }
+  .tag-genkan { background: var(--bone); color: var(--copper-deep); border: 1px solid var(--copper-deep); }
+  .tag-hiroma { background: var(--sumi); color: var(--bone); }
+  .tag-cockpit { background: var(--shou); color: var(--champagne); border: 1px solid var(--champagne); }
+  .tag-evening { background: #14101A; color: #C9A878; border: 1px solid #C9A878; }
+</style>
+</head>
+<body>
+
+<div class="lobby">
+
+  <header class="masthead">
+    <div class="masthead__brand">Personal Template System <span style="font-style: normal; color: var(--fg-3);">— Index</span></div>
+    <div class="masthead__meta">v1.2 · Apr 2026</div>
+  </header>
+
+  <section class="hero">
+    <h1>
+      Five registers,<br>
+      one <span class="acc">vocabulary</span>.
+    </h1>
+    <div class="hero__meta">
+      <span><strong>Maintained by</strong>&nbsp;Your Name</span>
+      <span><strong>Tokens</strong>&nbsp;<code style="font-size: 11px;">tokens.css</code></span>
+      <span><strong>Base</strong>&nbsp;<code style="font-size: 11px;">base.css</code></span>
+      <span><strong>Soul deck shell</strong>&nbsp;<code style="font-size: 11px;">torii.css</code></span>
+      <span><strong>Genkan shell</strong>&nbsp;<code style="font-size: 11px;">genkan.css</code></span>
+      <span><strong>Hiroma shell</strong>&nbsp;<code style="font-size: 11px;">hiroma.css</code></span>
+      <span><strong>Vesper shell</strong>&nbsp;<code style="font-size: 11px;">vesper.css</code></span>
+      <span><strong>Ophelia shell</strong>&nbsp;<code style="font-size: 11px;">ophelia.css</code></span>
+      <span><strong>Built for</strong>&nbsp;Claude Code CLI</span>
+    </div>
+  </section>
+
+  <!-- SOUL -->
+  <section class="register">
+    <div class="register__h">
+      <h2>Soul register</h2>
+      <span class="tag-soul">soul</span>
+    </div>
+    <p class="register__motto">
+      Warm Japanese craft. Sumi on bone, champagne and copper. For artifacts that face outward — decks, essays, memos, anything a person will hold or be handed.
+    </p>
+    <div class="cards cards--4">
+      <a href="Threshold.deck.html" class="card">
+        <div class="card__num">— 01</div>
+        <div class="card__name">Threshold</div>
+        <div class="card__type">Slide deck · 12 plates · 1920×1080</div>
+        <div class="card__desc">The crossing. A presentation shell with title, sumi-section divider, big-stat plate, kozo quote, numbered list, comparison, table, and shou-sugi-ban end card.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+      <a href="Hearth.doc.html" class="card">
+        <div class="card__num">— 02</div>
+        <div class="card__name">Hearth</div>
+        <div class="card__type">Long-form document · essay</div>
+        <div class="card__desc">The room one returns to. Working paper with masthead, TOC, drop-cap opener, marginalia column, callouts, code, table, footnotes, ornament rule, colophon.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+      <a href="Folio.memo.html" class="card">
+        <div class="card__num">— 03</div>
+        <div class="card__name">Folio</div>
+        <div class="card__type">One-page memo</div>
+        <div class="card__desc">A bordered page for a single argument. Header rule, addressee block, italic title, tl;dr aside, four numbered sections, signature plate.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+      <a href="Kozo.letter.html" class="card">
+        <div class="card__num">— 04</div>
+        <div class="card__name">Kozo</div>
+        <div class="card__type">Correspondence · single sheet</div>
+        <div class="card__desc">The inner-bark fiber. A bordered letter for a single voice — letterhead, addressee, opening, four close-set paragraphs, valediction, signature, postscript. For thank-yous, declines-with-warmth, transmittals.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- GENKAN -->
+  <section class="register">
+    <div class="register__h">
+      <h2>Genkan register</h2>
+      <span class="tag-genkan">genkan</span>
+    </div>
+    <p class="register__motto">
+      The entry zone between outside and inside. Soul material on a software surface — warm metals, hairlines, sharp corners. For marketing pages, in-product UI, portfolios, anything digital but soul-leaning.
+    </p>
+    <div class="cards cards--genkan cards--4">
+      <a href="Atrium.landing.html" class="card">
+        <div class="card__num">— 05</div>
+        <div class="card__name">Atrium</div>
+        <div class="card__type">Marketing landing · light</div>
+        <div class="card__desc">Sticky nav, hero with seal plate, three-feature manifesto, six-card catalogue, cross-method block, pull quote, three-tier pricing, FAQ, full footer. Sets the studio's outward voice.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+      <a href="Vellum.app.html" class="card">
+        <div class="card__num">— 06</div>
+        <div class="card__name">Vellum</div>
+        <div class="card__type">In-product app shell · light</div>
+        <div class="card__desc">Top bar with crumb &amp; search, three-group sidebar, KPI strip, tabbed catalogue table with badges &amp; pips, studio log, compose form, empty state. The genkan vocabulary, inside.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+      <a href="Engawa.darkapp.html" class="card">
+        <div class="card__num">— 07</div>
+        <div class="card__name">Engawa</div>
+        <div class="card__type">In-product app shell · dark · canonical reference</div>
+        <div class="card__desc">The veranda at night. Vellum's structural pair on graphite — manuscript queue, editorial notes, agent activity rail, working light/dark toggle. Demonstrates every dark-palette token in real use.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+      <a href="Foyer.catalogue.html" class="card">
+        <div class="card__num">— 08</div>
+        <div class="card__name">Foyer</div>
+        <div class="card__type">Catalogue · reading list · long index</div>
+        <div class="card__desc">The room you stand in before deciding which way to go. A scannable, rich-but-quiet index for portfolios, reading lists, season catalogues, press kits. The reader is a guest, not a lead.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- HIROMA -->
+  <section class="register">
+    <div class="register__h">
+      <h2>Hiroma register</h2>
+      <span class="tag-hiroma">hiroma</span>
+    </div>
+    <p class="register__motto">
+      The great room. The synthesis register — soul prose, genkan structure, cockpit instrumentation, orchestrated in one composition. Reserved for the artifacts that need all three voices in the same breath: studio pages, case studies, capability briefs, annual reports.
+    </p>
+    <div class="cards cards--hiroma cards--2">
+      <a href="Hiroma.studio.html" class="card">
+        <div class="card__num">— 09</div>
+        <div class="card__name">Hiroma</div>
+        <div class="card__type">Studio · case-study page · canonical synthesis</div>
+        <div class="card__desc">Stage with op-tempo cells, overture with prose lede, sash of paper-toned instruments, prose rooms with case-study plates, sash of graphite-toned instruments, engagement ladder, signature plate. Demonstrates how to braid the three registers without mixing them.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- COCKPIT -->
+  <section class="register">
+    <div class="register__h">
+      <h2 style="font-family: var(--font-body); font-style: normal; font-weight: 500;">Cockpit register</h2>
+      <span class="tag-cockpit">cockpit</span>
+    </div>
+    <p class="register__motto">
+      Dark, modular, instrumented. Graphite panels, restrained metallics, mono-forward type. For tooling, agent UIs, ops surfaces, terminals — anything you watch rather than read.
+    </p>
+    <div class="cards cards--cockpit">
+      <a href="Bastion.dashboard.html" class="card">
+        <div class="card__num">— 10</div>
+        <div class="card__name">BASTION</div>
+        <div class="card__type">Ops dashboard · 1440×900</div>
+        <div class="card__desc">Top bar, sidebar, KPI strip, system matrix, distribution bars, live event log, pulse footer. Posts named for guard structures: sentinel, watchtower, rampart, postern.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+      <a href="Watch.report.html" class="card">
+        <div class="card__num">— 11</div>
+        <div class="card__name">WATCH</div>
+        <div class="card__type">Incident report · structured</div>
+        <div class="card__desc">Disposition strip, summary, findings table, reproduction with shell capture, action items, dual sign-off. For postmortems, audits, and standing reports.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+      <a href="Rampart.missioncontrol.html" class="card">
+        <div class="card__num">— 12</div>
+        <div class="card__name">RAMPART</div>
+        <div class="card__type">Mission control · 1440×900</div>
+        <div class="card__desc">Five-region surface for parallel agents. Top bar with op-tempo, fleet roster of councils &amp; teams, swarm matrix of instrument cards, focused-subject inspector, live event log, dispatch field.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- EVENING -->
+  <section class="register">
+    <div class="register__h">
+      <h2>Evening register</h2>
+      <span class="tag-evening">evening</span>
+    </div>
+    <p class="register__motto">
+      Lamp-lit. Aubergine and inkwater. For sustained, slow, private artifacts read at the end of the day — chapbooks, prayers, letters to the body, anything where the page must hold the subject without flinching. One column, narrow measure, long fall.
+    </p>
+    <div class="cards cards--evening cards--2">
+      <a href="Vesper.evening.html" class="card">
+        <div class="card__num">— 13</div>
+        <div class="card__name">Vesper</div>
+        <div class="card__type">Evening chapbook · five movements · aubergine</div>
+        <div class="card__desc">A designer's evening prayer. Cartouche, frontispiece, five sustained movements with held-note credos and minimal caesurae, colophon. Cardo italic display on aubergine, champagne the held note.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+      <a href="Ophelia.evening.html" class="card">
+        <div class="card__num">— 14</div>
+        <div class="card__name">Ophelia</div>
+        <div class="card__type">Sustained prose · letter · inkwater</div>
+        <div class="card__desc">A letter to the body, in five movements. Vertical sideways marginalia, drowned-rouge accent, petal-white for the line that must be looked at. The same evening discipline, the opposite tone from Vesper.</div>
+        <div class="card__open"><span>open</span><span>→</span></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- File index -->
+  <section class="files">
+    <h3>Files</h3>
+    <div class="files__grid">
+      <a href="tokens.css"><span>tokens.css</span><span>palette · type · scale</span></a>
+      <a href="base.css"><span>base.css</span><span>primitives · shared</span></a>
+      <a href="torii.css"><span>torii.css</span><span>soul deck shell</span></a>
+      <a href="genkan.css"><span>genkan.css</span><span>genkan product shell</span></a>
+      <a href="hiroma.css"><span>hiroma.css</span><span>synthesis register · all three voices</span></a>
+      <a href="vesper.css"><span>vesper.css</span><span>evening · aubergine · ritual</span></a>
+      <a href="ophelia.css"><span>ophelia.css</span><span>evening · inkwater · sustained prose</span></a>
+      <a href="deck-stage.js"><span>deck-stage.js</span><span>scaling · keyboard nav</span></a>
+      <a href="Threshold.deck.html"><span>Threshold.deck.html</span><span>soul · slides</span></a>
+      <a href="Hearth.doc.html"><span>Hearth.doc.html</span><span>soul · document</span></a>
+      <a href="Folio.memo.html"><span>Folio.memo.html</span><span>soul · memo</span></a>
+      <a href="Kozo.letter.html"><span>Kozo.letter.html</span><span>soul · correspondence</span></a>
+      <a href="Atrium.landing.html"><span>Atrium.landing.html</span><span>genkan · landing</span></a>
+      <a href="Vellum.app.html"><span>Vellum.app.html</span><span>genkan · app shell (light)</span></a>
+      <a href="Engawa.darkapp.html"><span>Engawa.darkapp.html</span><span>genkan · app shell (dark)</span></a>
+      <a href="Foyer.catalogue.html"><span>Foyer.catalogue.html</span><span>genkan · reading list / catalogue</span></a>
+      <a href="Hiroma.studio.html"><span>Hiroma.studio.html</span><span>hiroma · studio / case-study</span></a>
+      <a href="Vesper.evening.html"><span>Vesper.evening.html</span><span>vesper · evening chapbook</span></a>
+      <a href="Ophelia.evening.html"><span>Ophelia.evening.html</span><span>ophelia · evening prose</span></a>
+      <a href="Bastion.dashboard.html"><span>Bastion.dashboard.html</span><span>cockpit · dashboard</span></a>
+      <a href="Watch.report.html"><span>Watch.report.html</span><span>cockpit · report</span></a>
+      <a href="Rampart.missioncontrol.html"><span>Rampart.missioncontrol.html</span><span>cockpit · mission control</span></a>
+      <a href="../CLAUDE.md"><span>CLAUDE.md</span><span>instructions for Claude Code</span></a>
+    </div>
+  </section>
+
+  <footer class="colophon footer-rule">
+    <span>Set in Cormorant Garamond, Inter &amp; JetBrains Mono</span>
+    <span>Personal Template System · v1.2</span>
+  </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="en" class="cockpit">
+<head>
+<meta charset="utf-8">
+<title>Bastion — Cockpit Dashboard Template</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="base.css">
+<style>
+  body { background: var(--graphite); color: var(--bone); }
+
+  .bastion {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+  }
+
+  /* ── Top bar ── */
+  .bar {
+    display: grid;
+    grid-template-columns: 280px 1fr auto;
+    border-bottom: 1px solid var(--rule);
+    background: var(--graphite-2);
+    height: 48px;
+    align-items: stretch;
+  }
+  .bar__brand {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 20px;
+    border-right: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+  }
+  .bar__brand .glyph {
+    width: 14px; height: 14px;
+    border: 1px solid var(--champagne);
+    position: relative;
+  }
+  .bar__brand .glyph::before {
+    content: ""; position: absolute; inset: 3px;
+    background: var(--champagne);
+  }
+  .bar__brand strong { color: var(--bone); font-weight: 500; }
+  .bar__brand span { color: var(--bone-3); }
+
+  .bar__breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    padding: 0 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--bone-3);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .bar__breadcrumb .sep { color: var(--bone-4); }
+  .bar__breadcrumb .here { color: var(--bone); }
+
+  .bar__instruments {
+    display: flex; align-items: stretch;
+    border-left: 1px solid var(--rule);
+  }
+  .bar__cell {
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 20px;
+    border-left: 1px solid var(--rule);
+    min-width: 120px;
+  }
+  .bar__cell:first-child { border-left: 0; }
+  .bar__cell .k {
+    font-family: var(--font-mono); font-size: 9px;
+    text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--bone-3);
+  }
+  .bar__cell .v {
+    font-family: var(--font-mono); font-size: 13px;
+    color: var(--bone); margin-top: 1px;
+    font-variant-numeric: tabular-nums;
+  }
+  .bar__cell .v.ok { color: var(--ok); }
+  .bar__cell .v.warn { color: var(--warn); }
+  .bar__cell .v.crit { color: var(--crit); }
+
+  /* ── Body grid: sidebar + main ── */
+  .body {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 0;
+  }
+
+  .sidebar {
+    border-right: 1px solid var(--rule);
+    background: var(--graphite-2);
+    padding: 20px 0;
+  }
+  .sidebar__group { margin-bottom: 24px; }
+  .sidebar__group h4 {
+    font-family: var(--font-mono); font-size: 9px;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--bone-3); padding: 0 20px 8px; font-weight: 400;
+  }
+  .sidebar__item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 20px;
+    font-family: var(--font-mono); font-size: 12px;
+    color: var(--bone-2);
+    border-left: 2px solid transparent;
+    cursor: pointer;
+    transition: background 120ms;
+  }
+  .sidebar__item:hover { background: var(--charcoal); color: var(--bone); }
+  .sidebar__item.active {
+    background: var(--charcoal);
+    color: var(--bone);
+    border-left-color: var(--champagne);
+  }
+  .sidebar__item .count {
+    font-size: 10px; color: var(--bone-3);
+    font-variant-numeric: tabular-nums;
+  }
+  .sidebar__item .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ok); margin-right: 10px;
+    display: inline-block;
+  }
+  .sidebar__item .dot.warn { background: var(--warn); }
+  .sidebar__item .dot.crit { background: var(--crit); }
+  .sidebar__item .dot.dim  { background: var(--bone-4); }
+
+  /* ── Main content ── */
+  .main {
+    padding: 24px 28px 64px;
+    overflow-y: auto;
+  }
+
+  .panel-h {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .panel-h h1 {
+    font-family: var(--font-body); font-size: 20px; font-weight: 500;
+    color: var(--bone); letter-spacing: -0.01em;
+  }
+  .panel-h .meta {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--bone-3); letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: flex; gap: 24px;
+  }
+  .panel-h .meta strong { color: var(--bone); font-weight: 400; }
+
+  /* — KPI strip — */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--rule);
+    margin-bottom: 24px;
+    background: var(--graphite-2);
+  }
+  .kpi {
+    padding: 16px 20px;
+    border-right: 1px solid var(--rule);
+    position: relative;
+  }
+  .kpi:last-child { border-right: 0; }
+  .kpi__k {
+    font-family: var(--font-mono); font-size: 9px;
+    text-transform: uppercase; letter-spacing: 0.16em;
+    color: var(--bone-3);
+  }
+  .kpi__v {
+    font-family: var(--font-mono); font-size: 28px;
+    color: var(--bone); margin-top: 6px;
+    font-variant-numeric: tabular-nums;
+    font-weight: 300;
+    letter-spacing: -0.02em;
+  }
+  .kpi__v .unit { font-size: 14px; color: var(--bone-3); margin-left: 4px; }
+  .kpi__d {
+    font-family: var(--font-mono); font-size: 10px;
+    margin-top: 4px;
+    color: var(--ok);
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi__d.down { color: var(--crit); }
+  .kpi__spark {
+    position: absolute; right: 16px; top: 16px;
+    width: 60px; height: 24px; opacity: 0.7;
+  }
+
+  /* — Two-column data — */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .panel {
+    border: 1px solid var(--rule);
+    background: var(--graphite-2);
+  }
+  .panel__h {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--graphite-3);
+    font-family: var(--font-mono); font-size: 11px;
+    text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--bone-2);
+  }
+  .panel__h .actions { display: flex; gap: 12px; color: var(--bone-3); font-size: 10px; }
+  .panel__h .actions a:hover { color: var(--champagne); }
+  .panel__b { padding: 16px; }
+
+  /* — System matrix — */
+  .matrix {
+    width: 100%; border-collapse: collapse;
+    font-family: var(--font-mono); font-size: 12px;
+  }
+  .matrix th {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--rule);
+    font-weight: 400;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--bone-3);
+  }
+  .matrix td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--rule-faint);
+    color: var(--bone-2);
+    vertical-align: middle;
+  }
+  .matrix tr:hover td { background: var(--charcoal); }
+  .matrix .num { font-variant-numeric: tabular-nums; text-align: right; }
+  .matrix .name { color: var(--bone); }
+  .matrix .name .glyph {
+    display: inline-block; width: 4px; height: 12px;
+    background: var(--champagne); margin-right: 10px;
+    vertical-align: -2px;
+  }
+  .status {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em;
+  }
+  .status .pip { width: 6px; height: 6px; border-radius: 50%; }
+  .status.ok   { color: var(--ok); }   .status.ok .pip   { background: var(--ok); }
+  .status.warn { color: var(--warn); } .status.warn .pip { background: var(--warn); }
+  .status.crit { color: var(--crit); } .status.crit .pip { background: var(--crit); }
+  .status.dim  { color: var(--bone-4); } .status.dim .pip { background: var(--bone-4); }
+
+  /* — Event log — */
+  .log {
+    font-family: var(--font-mono); font-size: 11px;
+    line-height: 1.7;
+    color: var(--bone-2);
+  }
+  .log__row { display: grid; grid-template-columns: 64px 56px 1fr; gap: 12px; padding: 4px 0; border-bottom: 1px solid var(--rule-faint); }
+  .log__row:last-child { border-bottom: 0; }
+  .log__t { color: var(--bone-3); font-variant-numeric: tabular-nums; }
+  .log__lvl { font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; padding-top: 1px; }
+  .log__lvl.info { color: var(--info); }
+  .log__lvl.warn { color: var(--warn); }
+  .log__lvl.ok   { color: var(--ok); }
+  .log__lvl.crit { color: var(--crit); }
+  .log__msg { color: var(--bone-2); }
+  .log__msg .id { color: var(--champagne); }
+
+  /* — Bar chart — */
+  .bars { display: grid; grid-template-columns: 1fr; gap: 7px; }
+  .bar-row { display: grid; grid-template-columns: 120px 1fr 60px; gap: 12px; align-items: center; font-family: var(--font-mono); font-size: 11px; }
+  .bar-row .lbl { color: var(--bone-2); }
+  .bar-row .val { color: var(--bone); text-align: right; font-variant-numeric: tabular-nums; }
+  .bar-row .track { background: var(--charcoal); height: 8px; position: relative; border: 1px solid var(--rule-faint); }
+  .bar-row .fill { position: absolute; inset: 0 auto 0 0; background: var(--champagne); }
+  .bar-row .fill.copper { background: var(--copper); }
+  .bar-row .fill.sage   { background: var(--ok); }
+
+  /* — Footer — */
+  .foot {
+    border-top: 1px solid var(--rule);
+    background: var(--graphite-2);
+    padding: 10px 28px;
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--bone-3);
+    display: flex; justify-content: space-between;
+    text-transform: uppercase; letter-spacing: 0.14em;
+  }
+  .foot .pulse {
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .foot .pulse::before {
+    content: ""; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ok);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+</style>
+</head>
+<body>
+
+<div class="bastion">
+
+  <!-- Top bar -->
+  <header class="bar">
+    <div class="bar__brand">
+      <span class="glyph"></span>
+      <span><strong>BASTION</strong> · ops</span>
+    </div>
+    <div class="bar__breadcrumb">
+      <span>fleet</span><span class="sep">/</span>
+      <span>region · iad</span><span class="sep">/</span>
+      <span class="here">cluster · sentinel-04</span>
+    </div>
+    <div class="bar__instruments">
+      <div class="bar__cell"><span class="k">uptime</span><span class="v">142d 06:14:22</span></div>
+      <div class="bar__cell"><span class="k">load</span><span class="v ok">0.42 / 0.51 / 0.48</span></div>
+      <div class="bar__cell"><span class="k">alerts</span><span class="v warn">2 watch</span></div>
+      <div class="bar__cell"><span class="k">build</span><span class="v">v1.42.0-rc3</span></div>
+    </div>
+  </header>
+
+  <!-- Body -->
+  <div class="body">
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar__group">
+        <h4>Posts</h4>
+        <div class="sidebar__item active"><span><span class="dot"></span>Sentinel</span><span class="count">04</span></div>
+        <div class="sidebar__item"><span><span class="dot"></span>Watchtower</span><span class="count">12</span></div>
+        <div class="sidebar__item"><span><span class="dot warn"></span>Rampart</span><span class="count">07</span></div>
+        <div class="sidebar__item"><span><span class="dot crit"></span>Postern</span><span class="count">02</span></div>
+        <div class="sidebar__item"><span><span class="dot dim"></span>Keep (cold)</span><span class="count">—</span></div>
+      </div>
+      <div class="sidebar__group">
+        <h4>Instruments</h4>
+        <div class="sidebar__item"><span>Throughput</span><span class="count">↗</span></div>
+        <div class="sidebar__item"><span>Latency</span><span class="count">→</span></div>
+        <div class="sidebar__item"><span>Queue depth</span><span class="count">↘</span></div>
+        <div class="sidebar__item"><span>Error budget</span><span class="count">94%</span></div>
+      </div>
+      <div class="sidebar__group">
+        <h4>Practice</h4>
+        <div class="sidebar__item"><span>Runbooks</span></div>
+        <div class="sidebar__item"><span>Postmortems</span></div>
+        <div class="sidebar__item"><span>Drills</span></div>
+      </div>
+    </nav>
+
+    <!-- Main -->
+    <main class="main">
+
+      <div class="panel-h">
+        <h1>Sentinel — cluster overview</h1>
+        <div class="meta">
+          <span><strong>iad-1a</strong> region</span>
+          <span><strong>14</strong> nodes</span>
+          <span>last sweep <strong>00:00:14</strong> ago</span>
+        </div>
+      </div>
+
+      <!-- KPI strip -->
+      <div class="kpis">
+        <div class="kpi">
+          <div class="kpi__k">requests / sec</div>
+          <div class="kpi__v">12,847</div>
+          <div class="kpi__d">+ 4.2% · 1h</div>
+          <svg class="kpi__spark" viewBox="0 0 60 24" preserveAspectRatio="none"><polyline fill="none" stroke="currentColor" stroke-width="1" points="0,18 8,16 16,17 24,12 32,14 40,8 48,10 60,6" style="color: var(--champagne);"/></svg>
+        </div>
+        <div class="kpi">
+          <div class="kpi__k">p99 latency</div>
+          <div class="kpi__v">142<span class="unit">ms</span></div>
+          <div class="kpi__d">− 8ms · 1h</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__k">error rate</div>
+          <div class="kpi__v">0.034<span class="unit">%</span></div>
+          <div class="kpi__d down">+ 0.011 · 1h</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi__k">budget remaining</div>
+          <div class="kpi__v">94<span class="unit">%</span></div>
+          <div class="kpi__d">+ 1.2 · 24h</div>
+        </div>
+      </div>
+
+      <!-- Two-column grid -->
+      <div class="grid-2">
+
+        <!-- Node matrix -->
+        <div class="panel">
+          <div class="panel__h">
+            <span>System matrix · 14 nodes</span>
+            <div class="actions"><a href="#">tail</a><a href="#">filter</a><a href="#">drain</a></div>
+          </div>
+          <div class="panel__b" style="padding: 0;">
+            <table class="matrix">
+              <thead>
+                <tr>
+                  <th>Node</th><th>Role</th><th class="num">CPU</th><th class="num">MEM</th><th class="num">RPS</th><th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="name"><span class="glyph"></span>sentinel-04-a1</td><td>primary</td><td class="num">42</td><td class="num">61</td><td class="num">3,142</td><td><span class="status ok"><span class="pip"></span>nominal</span></td></tr>
+                <tr><td class="name"><span class="glyph"></span>sentinel-04-a2</td><td>primary</td><td class="num">38</td><td class="num">58</td><td class="num">2,887</td><td><span class="status ok"><span class="pip"></span>nominal</span></td></tr>
+                <tr><td class="name"><span class="glyph" style="background: var(--warn);"></span>sentinel-04-a3</td><td>primary</td><td class="num">79</td><td class="num">82</td><td class="num">3,201</td><td><span class="status warn"><span class="pip"></span>elevated</span></td></tr>
+                <tr><td class="name"><span class="glyph"></span>sentinel-04-b1</td><td>replica</td><td class="num">24</td><td class="num">47</td><td class="num">1,084</td><td><span class="status ok"><span class="pip"></span>nominal</span></td></tr>
+                <tr><td class="name"><span class="glyph"></span>sentinel-04-b2</td><td>replica</td><td class="num">28</td><td class="num">49</td><td class="num">1,142</td><td><span class="status ok"><span class="pip"></span>nominal</span></td></tr>
+                <tr><td class="name"><span class="glyph" style="background: var(--crit);"></span>sentinel-04-c1</td><td>arbiter</td><td class="num">—</td><td class="num">—</td><td class="num">0</td><td><span class="status crit"><span class="pip"></span>unreachable</span></td></tr>
+                <tr><td class="name"><span class="glyph"></span>sentinel-04-c2</td><td>arbiter</td><td class="num">12</td><td class="num">22</td><td class="num">441</td><td><span class="status ok"><span class="pip"></span>nominal</span></td></tr>
+                <tr><td class="name"><span class="glyph" style="background: var(--bone-4);"></span>sentinel-04-d1</td><td>cold</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td><span class="status dim"><span class="pip"></span>standby</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Distribution -->
+        <div class="panel">
+          <div class="panel__h">
+            <span>Request distribution · 1h</span>
+            <div class="actions"><a href="#">window</a></div>
+          </div>
+          <div class="panel__b">
+            <div class="bars">
+              <div class="bar-row"><span class="lbl">/api/auth</span><span class="track"><span class="fill" style="width: 78%;"></span></span><span class="val">38.2%</span></div>
+              <div class="bar-row"><span class="lbl">/api/index</span><span class="track"><span class="fill" style="width: 52%;"></span></span><span class="val">24.1%</span></div>
+              <div class="bar-row"><span class="lbl">/api/search</span><span class="track"><span class="fill copper" style="width: 38%;"></span></span><span class="val">17.6%</span></div>
+              <div class="bar-row"><span class="lbl">/api/write</span><span class="track"><span class="fill" style="width: 22%;"></span></span><span class="val">10.4%</span></div>
+              <div class="bar-row"><span class="lbl">/api/admin</span><span class="track"><span class="fill sage" style="width: 12%;"></span></span><span class="val">5.8%</span></div>
+              <div class="bar-row"><span class="lbl">/health</span><span class="track"><span class="fill" style="width: 8%;"></span></span><span class="val">3.9%</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Event log full width -->
+      <div class="panel">
+        <div class="panel__h">
+          <span>Event log · live · sentinel-04</span>
+          <div class="actions">
+            <a href="#">pause</a><a href="#">filter</a><a href="#">export</a>
+          </div>
+        </div>
+        <div class="panel__b">
+          <div class="log">
+            <div class="log__row"><span class="log__t">17:42:18</span><span class="log__lvl info">info</span><span class="log__msg">acceptor accepted conn from <span class="id">10.42.7.131</span> · tls 1.3 · sni present</span></div>
+            <div class="log__row"><span class="log__t">17:42:14</span><span class="log__lvl ok">pass</span><span class="log__msg">drill <span class="id">postern.failover</span> completed in 6.2s · target 8s</span></div>
+            <div class="log__row"><span class="log__t">17:42:09</span><span class="log__lvl warn">warn</span><span class="log__msg">node <span class="id">sentinel-04-a3</span> cpu sustained &gt; 75% for 4m · auto-shed pending</span></div>
+            <div class="log__row"><span class="log__t">17:42:01</span><span class="log__lvl info">info</span><span class="log__msg">rotation begin · cert <span class="id">api.bastion.internal</span> · expiry in 14d</span></div>
+            <div class="log__row"><span class="log__t">17:41:58</span><span class="log__lvl crit">crit</span><span class="log__msg">arbiter <span class="id">sentinel-04-c1</span> unreachable · last heartbeat 47s ago · paging on-call</span></div>
+            <div class="log__row"><span class="log__t">17:41:42</span><span class="log__lvl info">info</span><span class="log__msg">queue depth nominal · <span class="id">142</span> pending · drain rate <span class="id">2.1k/s</span></span></div>
+            <div class="log__row"><span class="log__t">17:41:30</span><span class="log__lvl ok">pass</span><span class="log__msg">canary <span class="id">v1.42.0-rc3</span> 30m soak clean · advancing to 25%</span></div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="foot">
+    <span class="pulse">link · live · 14ms rtt</span>
+    <span>Bastion · Cockpit Register · v1</span>
+    <span>30 apr 2026 · 17:42:24 utc</span>
+  </footer>
+
+</div>
+
+</body>
+</html>

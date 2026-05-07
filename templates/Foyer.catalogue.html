@@ -1,0 +1,740 @@
+<!doctype html>
+<!--
+  ============================================================
+  FOYER — genkan-register catalogue / reading-list template
+  ============================================================
+  The foyer is the room you stand in before deciding which way
+  to go through the house. This template is for artifacts where
+  the reader is browsing, not converting: a published reading
+  list, a season's catalogue, a portfolio index, a press kit,
+  a published bibliography.
+
+  Pattern: a long, scannable index with rich-but-quiet entries.
+  Genkan-register: light surface, soul material, cockpit
+  structural discipline. No marketing voice. The reader is a
+  guest, not a lead.
+  ============================================================
+-->
+<html lang="en" data-register="genkan">
+<head>
+<meta charset="utf-8">
+<title>Foyer — Spring 2026 · A reading list from the studio</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="genkan.css">
+<style>
+  /* — Foyer-specific composition layered on genkan primitives — */
+
+  /* Masthead: thin top rule, brand left, season right. */
+  .fo-masthead {
+    border-top: 3px solid var(--fg);
+    border-bottom: 1px solid var(--rule);
+    padding: var(--space-5) 0;
+  }
+  .fo-masthead__inner {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-5);
+  }
+  .fo-masthead__brand {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: var(--fs-md);
+    color: var(--fg);
+  }
+  .fo-masthead__brand .glyph {
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 2px 6px;
+    margin-right: var(--space-3);
+  }
+  .fo-masthead__meta {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .fo-masthead__meta b { color: var(--fg); font-weight: 400; }
+
+  /* Title block */
+  .fo-title-block {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: var(--space-9);
+    align-items: end;
+    padding: var(--space-9) 0 var(--space-8);
+    border-bottom: 1px solid var(--rule);
+  }
+  .fo-title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(56px, 9vw, 112px);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    color: var(--fg);
+  }
+  .fo-title em { font-style: italic; font-weight: 300; color: var(--accent-deep); }
+  .fo-title-block__lede {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-lg);
+    line-height: 1.45;
+    color: var(--fg-2);
+    border-left: 1px solid var(--accent);
+    padding-left: var(--space-5);
+  }
+  @media (max-width: 880px) {
+    .fo-title-block { grid-template-columns: 1fr; }
+  }
+
+  /* Index — two-column directory like a printed bibliography */
+  .fo-index {
+    padding: var(--space-7) 0;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-5);
+    border-bottom: 1px solid var(--rule);
+  }
+  .fo-index__col h4 {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: var(--space-3);
+  }
+  .fo-index__col ul li {
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    color: var(--fg-2);
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: var(--space-2);
+    align-items: baseline;
+    border-bottom: 1px dotted var(--rule);
+    padding: var(--space-2) 0;
+  }
+  .fo-index__col ul li b {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    color: var(--accent);
+    font-size: var(--fs-2xs);
+  }
+  .fo-index__col ul li i {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-md);
+    color: var(--fg);
+  }
+  .fo-index__col ul li span {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    color: var(--fg-3);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+  }
+  @media (max-width: 880px) { .fo-index { grid-template-columns: 1fr; } }
+
+  /* Section headers — for each subject grouping */
+  .fo-shelf {
+    padding: var(--space-9) 0 var(--space-7);
+    border-bottom: 1px solid var(--rule);
+  }
+  .fo-shelf__head {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: var(--space-6);
+    align-items: baseline;
+    margin-bottom: var(--space-7);
+    padding-bottom: var(--space-5);
+    border-bottom: 1px solid var(--fg);
+  }
+  .fo-shelf__num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .fo-shelf__title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: var(--fs-2xl);
+    line-height: 1.05;
+    letter-spacing: var(--tracking-tight);
+    color: var(--fg);
+  }
+  .fo-shelf__title em { font-style: italic; font-weight: 300; color: var(--fg-2); }
+  .fo-shelf__count {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+    text-align: right;
+  }
+
+  /* — Entry: the heart of the catalogue. Number, title, author, year, blurb — */
+  .fo-entry {
+    display: grid;
+    grid-template-columns: 60px minmax(0, 3fr) minmax(0, 5fr) auto;
+    gap: var(--space-6);
+    padding: var(--space-6) 0;
+    border-bottom: 1px solid var(--rule-faint);
+    transition: background var(--dur-fast) var(--ease);
+  }
+  .fo-entry:hover { background: var(--bg-2); }
+  .fo-entry__num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    color: var(--accent);
+  }
+  .fo-entry__cite {}
+  .fo-entry__title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--fs-xl);
+    line-height: 1.15;
+    color: var(--fg);
+    margin-bottom: var(--space-2);
+  }
+  .fo-entry__author {
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    color: var(--fg-2);
+    margin-bottom: var(--space-2);
+  }
+  .fo-entry__author b { font-weight: 500; color: var(--fg); }
+  .fo-entry__bibl {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+  .fo-entry__note {
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    line-height: 1.65;
+    color: var(--fg-2);
+    text-wrap: pretty;
+    max-width: 56ch;
+  }
+  .fo-entry__note em { font-style: italic; color: var(--fg); }
+  .fo-entry__meta {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+    line-height: 1.7;
+  }
+  .fo-entry__meta .tag {
+    border: 1px solid var(--rule);
+    padding: 2px 6px;
+    margin-bottom: var(--space-2);
+    display: inline-block;
+    color: var(--fg-2);
+  }
+  .fo-entry__meta .tag--key { color: var(--accent); border-color: var(--accent); }
+  @media (max-width: 880px) {
+    .fo-entry { grid-template-columns: 40px 1fr; }
+    .fo-entry__cite, .fo-entry__note, .fo-entry__meta { grid-column: 2; }
+    .fo-entry__meta { text-align: left; }
+  }
+
+  /* — Pull-out: a single entry promoted to feature treatment — */
+  .fo-feature {
+    background: var(--bg-2);
+    padding: var(--space-8);
+    margin: var(--space-7) 0;
+    border-top: 1px solid var(--accent);
+    border-bottom: 1px solid var(--accent);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: var(--space-7);
+    align-items: start;
+  }
+  .fo-feature__cap {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: var(--space-4);
+  }
+  .fo-feature__title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--fs-3xl);
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    margin-bottom: var(--space-4);
+  }
+  .fo-feature__by {
+    font-size: var(--fs-md);
+    color: var(--fg-2);
+    margin-bottom: var(--space-5);
+  }
+  .fo-feature__by b { color: var(--fg); font-weight: 500; }
+  .fo-feature__pull {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-lg);
+    line-height: 1.4;
+    color: var(--fg);
+    border-left: 2px solid var(--accent);
+    padding-left: var(--space-5);
+    margin-bottom: var(--space-5);
+  }
+  .fo-feature__note {
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    color: var(--fg-2);
+    text-wrap: pretty;
+  }
+  @media (max-width: 880px) {
+    .fo-feature { grid-template-columns: 1fr; padding: var(--space-6); }
+  }
+
+  /* Editorial intro to a shelf */
+  .fo-shelf__intro {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-md);
+    line-height: 1.6;
+    color: var(--fg-2);
+    max-width: 56ch;
+    margin-bottom: var(--space-6);
+  }
+
+  /* Footer / colophon */
+  .fo-colophon {
+    border-top: 3px solid var(--fg);
+    padding: var(--space-7) 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-7);
+    margin-top: var(--space-8);
+  }
+  .fo-colophon h5 {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: var(--space-3);
+  }
+  .fo-colophon p {
+    font-size: var(--fs-sm);
+    line-height: 1.65;
+    color: var(--fg-2);
+    text-wrap: pretty;
+  }
+  .fo-colophon ul li {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-2);
+    line-height: 1.9;
+    border-bottom: 1px dotted var(--rule);
+    padding: 4px 0;
+    display: flex;
+    justify-content: space-between;
+  }
+  .fo-colophon ul li b { color: var(--fg); font-weight: 400; }
+  @media (max-width: 880px) {
+    .fo-colophon { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="gk-shell">
+
+  <!-- ── Masthead ────────────────────────────────────── -->
+  <header class="gk-container fo-masthead">
+    <div class="fo-masthead__inner">
+      <div class="fo-masthead__brand"><span class="glyph">門</span>Atrium Studio · Foyer</div>
+      <div class="fo-masthead__meta">
+        <b>Vol. IV</b> · <b>No. 02</b> · <b>Spring 2026</b> · Issue closed 30 Apr 2026
+      </div>
+    </div>
+  </header>
+
+  <main class="gk-container">
+
+    <!-- ── Title block ────────────────────────────── -->
+    <section class="fo-title-block">
+      <h1 class="fo-title">A reading list <em>for the practice</em>, spring 2026.</h1>
+      <p class="fo-title-block__lede">
+        Twenty-four books, three pamphlets, and a manuscript still in galleys —
+        what the studio has been reading between February and April. Annotated.
+        Loosely shelved. None of it is required; all of it has been useful.
+      </p>
+    </section>
+
+    <!-- ── Quick index ────────────────────────────── -->
+    <section class="fo-index">
+      <div class="fo-index__col">
+        <h4>I. On the practice</h4>
+        <ul>
+          <li><b>01</b><i>The Eye's Mind</i><span>Berger</span></li>
+          <li><b>02</b><i>In Praise of Shadows</i><span>Tanizaki</span></li>
+          <li><b>03</b><i>The Craftsman</i><span>Sennett</span></li>
+          <li><b>04</b><i>The Shape of Time</i><span>Kubler</span></li>
+          <li><b>05</b><i>The Thinking Hand</i><span>Pallasmaa</span></li>
+        </ul>
+      </div>
+      <div class="fo-index__col">
+        <h4>II. On the room</h4>
+        <ul>
+          <li><b>06</b><i>The Poetics of Space</i><span>Bachelard</span></li>
+          <li><b>07</b><i>A Pattern Language</i><span>Alexander &amp;c.</span></li>
+          <li><b>08</b><i>Atmospheres</i><span>Zumthor</span></li>
+          <li><b>09</b><i>The Architecture of Happiness</i><span>de Botton</span></li>
+        </ul>
+      </div>
+      <div class="fo-index__col">
+        <h4>III. On the page</h4>
+        <ul>
+          <li><b>10</b><i>The Elements of Typographic Style</i><span>Bringhurst</span></li>
+          <li><b>11</b><i>Detail in Typography</i><span>Hochuli</span></li>
+          <li><b>12</b><i>The Form of the Book</i><span>Tschichold</span></li>
+          <li><b>13</b><i>Working Drawings</i><span>(studio)</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ── Shelf I ────────────────────────────────── -->
+    <section class="fo-shelf">
+      <div class="fo-shelf__head">
+        <div class="fo-shelf__num">— Shelf 01</div>
+        <div>
+          <h2 class="fo-shelf__title">On the practice <em>— what it is to keep at it.</em></h2>
+        </div>
+        <div class="fo-shelf__count">5 entries</div>
+      </div>
+
+      <p class="fo-shelf__intro">
+        Five books we returned to this season. None of them are about what you make;
+        all of them are about how to keep making it without losing the thread.
+      </p>
+
+      <article class="fo-entry">
+        <div class="fo-entry__num">01</div>
+        <div class="fo-entry__cite">
+          <h3 class="fo-entry__title">The Eye's Mind</h3>
+          <div class="fo-entry__author">By <b>John Berger</b></div>
+          <div class="fo-entry__bibl">Pantheon · 2008 · 480 pp.</div>
+        </div>
+        <div class="fo-entry__note">
+          A late collection. The essay on Caravaggio (<em>"the painter of the streets"</em>) is the
+          one we marked. Useful for any practitioner who has been told their work is too dark
+          and is wondering whether the criticism is the point.
+        </div>
+        <div class="fo-entry__meta">
+          <span class="tag">Essays</span><br>
+          <span class="tag tag--key">Recommended</span><br>
+          <span>3 hr · 420 pp</span>
+        </div>
+      </article>
+
+      <article class="fo-entry">
+        <div class="fo-entry__num">02</div>
+        <div class="fo-entry__cite">
+          <h3 class="fo-entry__title">In Praise of Shadows</h3>
+          <div class="fo-entry__author">By <b>Jun'ichirō Tanizaki</b>, trans. Harper &amp; Seidensticker</div>
+          <div class="fo-entry__bibl">Leete's Island · 1977 / 1933 · 56 pp.</div>
+        </div>
+        <div class="fo-entry__note">
+          The book on which the studio's preference for warm dim surfaces was built.
+          Read it in one sitting, by lamp. You will never use a fluorescent overhead the same way.
+        </div>
+        <div class="fo-entry__meta">
+          <span class="tag">Essay</span><br>
+          <span class="tag tag--key">Foundational</span><br>
+          <span>1 hr · 56 pp</span>
+        </div>
+      </article>
+
+      <article class="fo-entry">
+        <div class="fo-entry__num">03</div>
+        <div class="fo-entry__cite">
+          <h3 class="fo-entry__title">The Craftsman</h3>
+          <div class="fo-entry__author">By <b>Richard Sennett</b></div>
+          <div class="fo-entry__bibl">Yale · 2008 · 326 pp.</div>
+        </div>
+        <div class="fo-entry__note">
+          The first volume of his <em>Homo Faber</em> trilogy. Read alongside <i>Together</i> (2012)
+          and <i>Building and Dwelling</i> (2018) for the full argument. Slow but rewarding.
+        </div>
+        <div class="fo-entry__meta">
+          <span class="tag">Theory</span><br>
+          <span>4 hr · 326 pp</span>
+        </div>
+      </article>
+
+      <!-- Featured pull-out -->
+      <div class="fo-feature">
+        <div>
+          <div class="fo-feature__cap">— The studio's pick · spring 2026</div>
+          <h3 class="fo-feature__title">The Shape of Time</h3>
+          <div class="fo-feature__by">By <b>George Kubler</b> · Yale · 1962 · 136 pp.</div>
+        </div>
+        <div>
+          <p class="fo-feature__pull">
+            "Actuality is the void between events; for an actuality is forever
+            a void, until and unless an act has filled it."
+          </p>
+          <p class="fo-feature__note">
+            We re-read this every spring. A small book that argues — beautifully, almost in passing —
+            that practice is what fills the space between the things one makes, and that what one
+            makes is therefore the negative shape of the practice. Read with a pencil in hand.
+            Mark the chapter on serial time; ignore the index.
+          </p>
+        </div>
+      </div>
+
+      <article class="fo-entry">
+        <div class="fo-entry__num">05</div>
+        <div class="fo-entry__cite">
+          <h3 class="fo-entry__title">The Thinking Hand</h3>
+          <div class="fo-entry__author">By <b>Juhani Pallasmaa</b></div>
+          <div class="fo-entry__bibl">Wiley · 2009 · 160 pp.</div>
+        </div>
+        <div class="fo-entry__note">
+          Architectural in ostensible subject; about embodied knowledge in fact. The pairing
+          with Sennett is obvious. The pairing with Tanizaki is the interesting one.
+        </div>
+        <div class="fo-entry__meta">
+          <span class="tag">Theory</span><br>
+          <span>2 hr · 160 pp</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- ── Shelf II ───────────────────────────────── -->
+    <section class="fo-shelf">
+      <div class="fo-shelf__head">
+        <div class="fo-shelf__num">— Shelf 02</div>
+        <div>
+          <h2 class="fo-shelf__title">On the room <em>— and what one builds for the body.</em></h2>
+        </div>
+        <div class="fo-shelf__count">4 entries</div>
+      </div>
+
+      <p class="fo-shelf__intro">
+        Four books on space, considered loosely. The argument running through them: rooms
+        do half the work of the people inside them, and we tend to forget this when we are designing.
+      </p>
+
+      <article class="fo-entry">
+        <div class="fo-entry__num">06</div>
+        <div class="fo-entry__cite">
+          <h3 class="fo-entry__title">The Poetics of Space</h3>
+          <div class="fo-entry__author">By <b>Gaston Bachelard</b>, trans. Maria Jolas</div>
+          <div class="fo-entry__bibl">Penguin · 1958 / 2014 · 288 pp.</div>
+        </div>
+        <div class="fo-entry__note">
+          The chapter on drawers. The chapter on corners. The chapter on the house as cosmos.
+          Read slowly; he writes as one. You will not finish it in a sitting and you should not try.
+        </div>
+        <div class="fo-entry__meta">
+          <span class="tag">Theory</span><br>
+          <span class="tag tag--key">Recommended</span><br>
+          <span>5 hr · 288 pp</span>
+        </div>
+      </article>
+
+      <article class="fo-entry">
+        <div class="fo-entry__num">07</div>
+        <div class="fo-entry__cite">
+          <h3 class="fo-entry__title">A Pattern Language</h3>
+          <div class="fo-entry__author">By <b>Christopher Alexander</b>, with Ishikawa &amp; Silverstein</div>
+          <div class="fo-entry__bibl">OUP · 1977 · 1216 pp.</div>
+        </div>
+        <div class="fo-entry__note">
+          A reference, not a read. Patterns 159 (Light on Two Sides), 179 (Alcoves), 188 (Bed Alcove).
+          The studio works in patterns; this is one of the books that taught us how.
+        </div>
+        <div class="fo-entry__meta">
+          <span class="tag">Reference</span><br>
+          <span>—</span>
+        </div>
+      </article>
+
+      <article class="fo-entry">
+        <div class="fo-entry__num">08</div>
+        <div class="fo-entry__cite">
+          <h3 class="fo-entry__title">Atmospheres</h3>
+          <div class="fo-entry__author">By <b>Peter Zumthor</b></div>
+          <div class="fo-entry__bibl">Birkhäuser · 2006 · 75 pp.</div>
+        </div>
+        <div class="fo-entry__note">
+          A short lecture, set as a small book. He talks about how things sound, how light falls,
+          how a body moves through a room. The opposite of theory; closer to a recipe.
+        </div>
+        <div class="fo-entry__meta">
+          <span class="tag">Lecture</span><br>
+          <span class="tag tag--key">Foundational</span><br>
+          <span>45 min · 75 pp</span>
+        </div>
+      </article>
+
+      <article class="fo-entry">
+        <div class="fo-entry__num">09</div>
+        <div class="fo-entry__cite">
+          <h3 class="fo-entry__title">The Architecture of Happiness</h3>
+          <div class="fo-entry__author">By <b>Alain de Botton</b></div>
+          <div class="fo-entry__bibl">Pantheon · 2006 · 280 pp.</div>
+        </div>
+        <div class="fo-entry__note">
+          Easier than the others on this shelf, and useful for that reason. A good gift for
+          someone who has just bought their first house and is wondering why they feel responsible
+          for its mood.
+        </div>
+        <div class="fo-entry__meta">
+          <span class="tag">Essays</span><br>
+          <span>3 hr · 280 pp</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- ── Shelf III ──────────────────────────────── -->
+    <section class="fo-shelf">
+      <div class="fo-shelf__head">
+        <div class="fo-shelf__num">— Shelf 03</div>
+        <div>
+          <h2 class="fo-shelf__title">On the page <em>— craft books for the desk.</em></h2>
+        </div>
+        <div class="fo-shelf__count">4 entries · 1 in galleys</div>
+      </div>
+
+      <p class="fo-shelf__intro">
+        The four books that should be within arm's reach if you set type for a living, and
+        one we are reading in galleys. Of the four, only Bringhurst is a book one reads through;
+        the rest are referenced.
+      </p>
+
+      <article class="fo-entry">
+        <div class="fo-entry__num">10</div>
+        <div class="fo-entry__cite">
+          <h3 class="fo-entry__title">The Elements of Typographic Style</h3>
+          <div class="fo-entry__author">By <b>Robert Bringhurst</b></div>
+          <div class="fo-entry__bibl">Hartley &amp; Marks · 4th ed. · 384 pp.</div>
+        </div>
+        <div class="fo-entry__note">
+          The reference. Read chapters 1–3 cover-to-cover; refer to the rest.
+          Anyone setting type at the studio is expected to have an opinion on §3.2.
+        </div>
+        <div class="fo-entry__meta">
+          <span class="tag">Reference</span><br>
+          <span class="tag tag--key">Foundational</span><br>
+          <span>—</span>
+        </div>
+      </article>
+
+      <article class="fo-entry">
+        <div class="fo-entry__num">11</div>
+        <div class="fo-entry__cite">
+          <h3 class="fo-entry__title">Detail in Typography</h3>
+          <div class="fo-entry__author">By <b>Jost Hochuli</b></div>
+          <div class="fo-entry__bibl">Hyphen · 2008 · 64 pp.</div>
+        </div>
+        <div class="fo-entry__note">
+          The book on the micro-typography of body text — letter spacing, word spacing, leading,
+          line length. Slim. Indispensable.
+        </div>
+        <div class="fo-entry__meta">
+          <span class="tag">Reference</span><br>
+          <span>1 hr · 64 pp</span>
+        </div>
+      </article>
+
+      <article class="fo-entry">
+        <div class="fo-entry__num">12</div>
+        <div class="fo-entry__cite">
+          <h3 class="fo-entry__title">The Form of the Book</h3>
+          <div class="fo-entry__author">By <b>Jan Tschichold</b></div>
+          <div class="fo-entry__bibl">Hartley &amp; Marks · 1991 · 188 pp.</div>
+        </div>
+        <div class="fo-entry__note">
+          Late Tschichold; he had walked back the Bauhaus and was setting Penguin classics.
+          The essays on the page proportions are the ones to read first.
+        </div>
+        <div class="fo-entry__meta">
+          <span class="tag">Essays</span><br>
+          <span>2 hr · 188 pp</span>
+        </div>
+      </article>
+
+      <article class="fo-entry">
+        <div class="fo-entry__num">13</div>
+        <div class="fo-entry__cite">
+          <h3 class="fo-entry__title">Working Drawings</h3>
+          <div class="fo-entry__author">By the studio · in galleys</div>
+          <div class="fo-entry__bibl">Atrium Press · forthcoming, autumn 2026</div>
+        </div>
+        <div class="fo-entry__note">
+          Our own. Sixty-eight plates of in-progress work — the studio's books, decks, and
+          marketing pages, with the editorial reasoning written into the margins.
+          Available to subscribers in autumn; pre-orders open in July.
+        </div>
+        <div class="fo-entry__meta">
+          <span class="tag tag--key">Forthcoming</span><br>
+          <span>— · 240 pp</span>
+        </div>
+      </article>
+    </section>
+
+    <!-- ── Colophon / matter ─────────────────────── -->
+    <footer class="fo-colophon">
+      <div>
+        <h5>About this list</h5>
+        <p>
+          Foyer is the studio's quarterly reading list, sent to subscribers and posted in full to
+          the studio site at the close of the season. It is what we read, not what we recommend;
+          but the things we recommend are tagged. The studio is not paid to mention any title
+          in this list and does not accept titles for review.
+        </p>
+      </div>
+      <div>
+        <h5>Subscribe</h5>
+        <ul>
+          <li><b>Quarterly · post</b><span>£28 / yr</span></li>
+          <li><b>Quarterly · email</b><span>Free</span></li>
+          <li><b>Annual · bound</b><span>£64</span></li>
+          <li><b>Press &amp; libraries</b><span>On request</span></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Catalogue</h5>
+        <ul>
+          <li><b>This issue</b><span>FY-26-Q2</span></li>
+          <li><b>Set in</b><span>Cormorant · Inter</span></li>
+          <li><b>Closed</b><span>30 Apr 2026</span></li>
+          <li><b>Next</b><span>FY-26-Q3 · Aug</span></li>
+        </ul>
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+</body>
+</html>

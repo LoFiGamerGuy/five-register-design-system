@@ -1,0 +1,1170 @@
+<!doctype html>
+<html lang="en" class="cockpit">
+<head>
+<meta charset="utf-8">
+<title>Rampart — Mission Control</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="base.css">
+<style>
+  /* ============================================================
+     RAMPART — cockpit-register mission control surface
+     Five regions: top bar · left rail · main canvas · right rail · bottom drawer
+     ============================================================ */
+  html, body { height: 100%; overflow: hidden; }
+  body {
+    background: var(--graphite);
+    color: var(--bone);
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  * { box-sizing: border-box; }
+
+  .rampart {
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 48px 1fr 220px;
+    grid-template-columns: 240px 1fr 340px;
+    grid-template-areas:
+      "top   top    top"
+      "rail  main   inspector"
+      "drawer drawer drawer";
+  }
+
+  /* — TOP BAR — */
+  .top {
+    grid-area: top;
+    background: var(--graphite-2);
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 240px 1fr auto auto auto;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .top__brand {
+    display: flex; align-items: center; gap: 10px;
+    padding: 0 16px;
+    border-right: 1px solid var(--rule);
+    height: 100%;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+  }
+  .top__glyph {
+    width: 14px; height: 14px;
+    position: relative;
+    border: 1px solid var(--champagne);
+  }
+  .top__glyph::before, .top__glyph::after {
+    content: ""; position: absolute;
+    background: var(--champagne);
+  }
+  .top__glyph::before { inset: 2px 5px; }
+  .top__glyph::after  { inset: 5px 2px; }
+  .top__brand strong { color: var(--bone); font-weight: 500; letter-spacing: 0.18em; }
+
+  .top__breadcrumb {
+    padding: 0 18px;
+    color: var(--bone-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .top__breadcrumb b { color: var(--bone); font-weight: 400; }
+  .top__breadcrumb .sep { color: var(--bone-4); padding: 0 8px; }
+  .top__breadcrumb .acc { color: var(--champagne); }
+
+  .top__cell {
+    padding: 0 16px;
+    border-left: 1px solid var(--rule);
+    height: 100%;
+    display: flex; flex-direction: column; justify-content: center;
+    min-width: 110px;
+  }
+  .top__cell .k {
+    font-size: 9px; color: var(--bone-3);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+  }
+  .top__cell .v {
+    color: var(--bone);
+    font-variant-numeric: tabular-nums;
+    margin-top: 1px;
+  }
+  .top__cell .v .pip {
+    display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; margin-right: 6px; vertical-align: 1px;
+    background: var(--ok);
+  }
+
+  .tempo {
+    display: flex;
+    height: 100%;
+  }
+  .tempo button {
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--rule);
+    color: var(--bone-3);
+    padding: 0 14px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+  }
+  .tempo button.on {
+    background: var(--champagne-soft);
+    color: var(--champagne);
+  }
+  .tempo button:hover { color: var(--bone); }
+
+  /* — LEFT RAIL : FLEET ROSTER — */
+  .rail {
+    grid-area: rail;
+    background: var(--graphite-2);
+    border-right: 1px solid var(--rule);
+    overflow-y: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .rail__group {
+    border-bottom: 1px solid var(--rule);
+    padding: 10px 0;
+  }
+  .rail__h {
+    display: flex; justify-content: space-between;
+    padding: 4px 14px 8px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--bone-3);
+  }
+  .rail__h .count { color: var(--champagne); font-variant-numeric: tabular-nums; }
+
+  .roster-item {
+    display: grid;
+    grid-template-columns: 8px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 5px 14px;
+    color: var(--bone-2);
+    cursor: pointer;
+    transition: background 120ms;
+    border-left: 2px solid transparent;
+  }
+  .roster-item:hover { background: var(--graphite-3); color: var(--bone); }
+  .roster-item.on {
+    background: var(--graphite-3);
+    border-left-color: var(--champagne);
+    color: var(--bone);
+  }
+  .roster-item .pip {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ok);
+  }
+  .roster-item .pip.warn { background: var(--warn); }
+  .roster-item .pip.crit { background: var(--crit); }
+  .roster-item .pip.dim  { background: var(--bone-4); }
+  .roster-item .pip.thinking { background: var(--info); animation: pulse 1.4s ease-in-out infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.4; }
+    50%      { opacity: 1; }
+  }
+
+  .roster-item .name { font-size: 11px; }
+  .roster-item .name b { color: var(--bone); font-weight: 500; }
+  .roster-item .meta { color: var(--bone-3); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; font-variant-numeric: tabular-nums; }
+
+  .roster-council {
+    background: var(--graphite-3);
+    padding: 6px 14px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--champagne);
+    margin: 4px 0 2px;
+    display: flex; justify-content: space-between;
+  }
+  .roster-council .meta { color: var(--bone-3); font-size: 9px; }
+
+  /* — MAIN CANVAS : SWARM MATRIX — */
+  .main {
+    grid-area: main;
+    overflow-y: auto;
+    background: var(--graphite);
+  }
+  .main__bar {
+    position: sticky; top: 0; z-index: 2;
+    background: var(--graphite-2);
+    border-bottom: 1px solid var(--rule);
+    padding: 10px 18px;
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .main__bar h2 {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--bone);
+    font-weight: 500;
+  }
+  .main__bar .count {
+    color: var(--champagne);
+    font-variant-numeric: tabular-nums;
+  }
+  .main__bar .filters {
+    margin-left: auto;
+    display: flex; gap: 4px;
+  }
+  .main__bar .filters button {
+    background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--bone-3);
+    padding: 4px 10px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+  }
+  .main__bar .filters button.on {
+    color: var(--champagne);
+    border-color: var(--champagne);
+    background: var(--champagne-soft);
+  }
+  .main__bar .filters button:hover { color: var(--bone); }
+
+  .swarm {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 8px;
+  }
+
+  /* — Agent card (instrument) — */
+  .agent {
+    background: var(--graphite-2);
+    border: 1px solid var(--rule);
+    padding: 12px;
+    display: grid;
+    grid-template-rows: auto auto auto auto;
+    gap: 8px;
+    cursor: pointer;
+    transition: border-color 140ms, background 140ms;
+    position: relative;
+  }
+  .agent:hover { background: var(--graphite-3); border-color: var(--rule-strong); }
+  .agent.focused {
+    border-color: var(--champagne);
+    background: var(--graphite-3);
+  }
+  .agent.focused::before {
+    content: ""; position: absolute;
+    inset: -1px; border: 1px solid var(--champagne);
+    pointer-events: none;
+  }
+
+  .agent__head {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .agent__pip {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--ok);
+    flex-shrink: 0;
+  }
+  .agent__pip.warn     { background: var(--warn); }
+  .agent__pip.crit     { background: var(--crit); }
+  .agent__pip.dim      { background: var(--bone-4); }
+  .agent__pip.thinking { background: var(--info); animation: pulse 1.4s ease-in-out infinite; }
+
+  .agent__call {
+    color: var(--bone);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+  }
+  .agent__role {
+    margin-left: auto;
+    color: var(--bone-3);
+    font-size: 9px;
+  }
+
+  .agent__task {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--bone);
+    line-height: 1.4;
+    min-height: 34px;
+  }
+  .agent__task .acc { color: var(--champagne); }
+
+  .agent__meter {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--bone-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .agent__bar {
+    height: 2px;
+    background: var(--rule);
+    position: relative;
+  }
+  .agent__bar i {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--champagne);
+  }
+  .agent__bar.warn i { background: var(--warn); }
+  .agent__bar.crit i { background: var(--crit); }
+  .agent__phase { color: var(--bone-2); font-variant-numeric: tabular-nums; }
+
+  .agent__foot {
+    display: flex; justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    color: var(--bone-3);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    border-top: 1px solid var(--rule-faint);
+    padding-top: 8px;
+  }
+  .agent__foot b { color: var(--bone-2); font-weight: 400; font-variant-numeric: tabular-nums; }
+
+  /* council band */
+  .council-band {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: auto 1fr auto auto auto;
+    align-items: center;
+    gap: 16px;
+    padding: 10px 12px;
+    background: linear-gradient(to right, var(--champagne-soft), transparent 60%);
+    border: 1px solid var(--champagne);
+    border-left-width: 2px;
+    margin-top: 6px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .council-band .lbl { color: var(--champagne); }
+  .council-band .name { color: var(--bone); font-weight: 500; letter-spacing: 0.16em; }
+  .council-band .topic { font-family: var(--font-body); font-size: 12px; text-transform: none; letter-spacing: -0.005em; color: var(--bone-2); }
+  .council-band .meta { color: var(--bone-3); font-variant-numeric: tabular-nums; }
+
+  /* — RIGHT RAIL : INSPECTOR — */
+  .inspector {
+    grid-area: inspector;
+    background: var(--graphite-2);
+    border-left: 1px solid var(--rule);
+    overflow-y: auto;
+    display: flex; flex-direction: column;
+  }
+  .inspector__head {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--rule);
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .inspector__eyebrow {
+    font-family: var(--font-mono); font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--champagne);
+  }
+  .inspector__title {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--bone);
+    letter-spacing: -0.01em;
+  }
+  .inspector__sub {
+    font-family: var(--font-mono); font-size: 10px;
+    color: var(--bone-3);
+    text-transform: uppercase; letter-spacing: 0.12em;
+    margin-top: 2px;
+  }
+
+  .insp-section { border-bottom: 1px solid var(--rule); padding: 12px 16px; }
+  .insp-section h3 {
+    font-family: var(--font-mono); font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--bone-3);
+    margin-bottom: 8px;
+    display: flex; justify-content: space-between;
+  }
+  .insp-section h3 .acc { color: var(--champagne); font-variant-numeric: tabular-nums; }
+
+  .plan-step {
+    display: grid;
+    grid-template-columns: 16px 1fr;
+    gap: 8px;
+    padding: 4px 0;
+    font-size: 12px;
+    color: var(--bone-2);
+    line-height: 1.4;
+  }
+  .plan-step .mark {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--bone-3);
+    padding-top: 2px;
+  }
+  .plan-step.done .mark { color: var(--ok); }
+  .plan-step.now { color: var(--bone); }
+  .plan-step.now .mark { color: var(--champagne); }
+  .plan-step.now .body::after {
+    content: "";
+    display: inline-block;
+    width: 6px; height: 11px;
+    background: var(--champagne);
+    margin-left: 4px;
+    vertical-align: -2px;
+    animation: blink 1.1s steps(2) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .transcript {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  .transcript .turn {
+    margin-bottom: 8px;
+  }
+  .transcript .turn .who {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--champagne);
+    margin-bottom: 2px;
+  }
+  .transcript .turn .who.peer { color: var(--bone-3); }
+  .transcript .turn .body {
+    color: var(--bone-2);
+    font-family: var(--font-body);
+    font-size: 12px;
+  }
+  .transcript .tool {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 8px;
+    padding: 4px 8px;
+    background: var(--graphite-3);
+    border-left: 2px solid var(--info);
+    font-size: 10px;
+    color: var(--bone-2);
+    margin: 4px 0;
+  }
+  .transcript .tool.ok   { border-left-color: var(--ok); }
+  .transcript .tool.warn { border-left-color: var(--warn); }
+  .transcript .tool .lbl { color: var(--bone-3); }
+  .transcript .tool .arg { color: var(--bone); }
+  .transcript .tool .t   { color: var(--bone-3); font-variant-numeric: tabular-nums; }
+
+  .deps {
+    display: flex; flex-direction: column; gap: 4px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .deps .dep {
+    display: grid;
+    grid-template-columns: 8px 1fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 3px 0;
+    color: var(--bone-2);
+  }
+  .deps .dep .pip {
+    width: 6px; height: 6px; border-radius: 50%;
+  }
+  .deps .dep .meta { color: var(--bone-3); font-size: 9px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+  /* — BOTTOM DRAWER — */
+  .drawer {
+    grid-area: drawer;
+    background: var(--graphite-2);
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1fr 360px;
+  }
+  .drawer__log {
+    border-right: 1px solid var(--rule);
+    overflow-y: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .drawer__h {
+    position: sticky; top: 0;
+    background: var(--graphite-2);
+    border-bottom: 1px solid var(--rule);
+    padding: 8px 14px;
+    display: flex; justify-content: space-between;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--bone-3);
+  }
+  .drawer__h .acc { color: var(--champagne); font-variant-numeric: tabular-nums; }
+
+  .log-row {
+    display: grid;
+    grid-template-columns: 80px 60px 60px 1fr;
+    gap: 12px;
+    padding: 5px 14px;
+    border-bottom: 1px solid var(--rule-faint);
+    font-size: 11px;
+    color: var(--bone-2);
+    align-items: baseline;
+  }
+  .log-row .t { color: var(--bone-3); font-variant-numeric: tabular-nums; }
+  .log-row .lvl {
+    text-transform: uppercase;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+  }
+  .log-row .lvl.info { color: var(--info); }
+  .log-row .lvl.ok   { color: var(--ok); }
+  .log-row .lvl.warn { color: var(--warn); }
+  .log-row .lvl.crit { color: var(--crit); }
+  .log-row .src { color: var(--champagne); font-size: 10px; letter-spacing: 0.06em; }
+  .log-row .msg { color: var(--bone); font-family: var(--font-body); font-size: 12px; }
+
+  .drawer__dispatch {
+    padding: 12px 16px;
+    display: flex; flex-direction: column;
+    gap: 8px;
+  }
+  .drawer__dispatch h3 {
+    font-family: var(--font-mono); font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--bone-3);
+  }
+  .dispatch__field {
+    background: var(--graphite);
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--champagne);
+    padding: 8px 10px;
+    color: var(--bone);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .dispatch__field .prompt { color: var(--champagne); user-select: none; }
+  .dispatch__field .input { color: var(--bone); }
+  .dispatch__field .input::after {
+    content: "";
+    display: inline-block;
+    width: 6px; height: 11px;
+    background: var(--bone);
+    vertical-align: -2px;
+    animation: blink 1.1s steps(2) infinite;
+  }
+
+  .dispatch-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+  }
+  .dispatch-actions button {
+    background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--bone-2);
+    padding: 7px 6px;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+  }
+  .dispatch-actions button:hover { color: var(--bone); border-color: var(--rule-strong); }
+  .dispatch-actions button.crit { color: var(--crit); border-color: rgba(194, 106, 56, 0.4); }
+  .dispatch-actions button.crit:hover { background: rgba(194, 106, 56, 0.1); }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--rule); }
+  ::-webkit-scrollbar-thumb:hover { background: var(--rule-strong); }
+</style>
+</head>
+<body>
+
+<div class="rampart">
+
+  <!-- ============================ TOP BAR ============================ -->
+  <header class="top">
+    <div class="top__brand">
+      <span class="top__glyph"></span>
+      <strong>RAMPART</strong>
+    </div>
+    <div class="top__breadcrumb">
+      mission <b>orient·02</b><span class="sep">/</span>theatre <b>research</b><span class="sep">/</span><span class="acc">all stations posted</span>
+    </div>
+    <div class="top__cell">
+      <span class="k">utc</span>
+      <span class="v">17:42:08</span>
+    </div>
+    <div class="top__cell">
+      <span class="k">global pulse</span>
+      <span class="v"><span class="pip"></span>nominal · 47 active</span>
+    </div>
+    <div class="tempo" role="tablist" aria-label="operational tempo">
+      <button>peace</button>
+      <button class="on">watch</button>
+      <button>general quarters</button>
+    </div>
+  </header>
+
+  <!-- ============================ LEFT RAIL ============================ -->
+  <nav class="rail" aria-label="fleet roster">
+
+    <div class="rail__group">
+      <div class="rail__h"><span>councils</span><span class="count">3</span></div>
+
+      <div class="roster-council">
+        <span>Praesidium</span>
+        <span class="meta">5 · debate</span>
+      </div>
+      <div class="roster-item"><span class="pip thinking"></span><span class="name"><b>scrivener</b> · chair</span><span class="meta">38s</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>oracle-1</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>oracle-2</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip warn"></span><span class="name"><b>archivist</b></span><span class="meta">tool wait</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>quill</b> · scribe</span><span class="meta">posted</span></div>
+
+      <div class="roster-council">
+        <span>Forum</span>
+        <span class="meta">4 · synth</span>
+      </div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>tribune</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip thinking"></span><span class="name"><b>orator-a</b></span><span class="meta">12s</span></div>
+      <div class="roster-item"><span class="pip thinking"></span><span class="name"><b>orator-b</b></span><span class="meta">12s</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>arbiter</b></span><span class="meta">posted</span></div>
+
+      <div class="roster-council">
+        <span>Postern</span>
+        <span class="meta">3 · review</span>
+      </div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>warden</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>steward</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>ledger</b></span><span class="meta">posted</span></div>
+    </div>
+
+    <div class="rail__group">
+      <div class="rail__h"><span>teams</span><span class="count">5</span></div>
+
+      <div class="roster-council">
+        <span>Cartographers</span>
+        <span class="meta">7 · survey</span>
+      </div>
+      <div class="roster-item on"><span class="pip thinking"></span><span class="name"><b>compass</b> · lead</span><span class="meta">2m04</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>azimuth</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>plumb</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip warn"></span><span class="name"><b>sextant</b></span><span class="meta">retry 2/3</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>theodolite</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>chain</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip dim"></span><span class="name"><b>plat</b></span><span class="meta">relieved</span></div>
+
+      <div class="roster-council">
+        <span>Smiths</span>
+        <span class="meta">5 · build</span>
+      </div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>anvil</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip thinking"></span><span class="name"><b>bellows</b></span><span class="meta">9s</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>tongs</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>quench</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip crit"></span><span class="name"><b>hammer</b></span><span class="meta">halted</span></div>
+    </div>
+
+    <div class="rail__group">
+      <div class="rail__h"><span>lone agents</span><span class="count">8</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>vesper</b></span><span class="meta">long-poll</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>matins</b></span><span class="meta">long-poll</span></div>
+      <div class="roster-item"><span class="pip thinking"></span><span class="name"><b>aurora</b></span><span class="meta">22s</span></div>
+      <div class="roster-item"><span class="pip dim"></span><span class="name"><b>cipher</b></span><span class="meta">idle</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>raven</b></span><span class="meta">posted</span></div>
+      <div class="roster-item"><span class="pip"></span><span class="name"><b>finch</b></span><span class="meta">posted</span></div>
+    </div>
+  </nav>
+
+  <!-- ============================ MAIN CANVAS ============================ -->
+  <section class="main" aria-label="swarm matrix">
+    <header class="main__bar">
+      <h2>Swarm Matrix · <span class="count">47 / 52</span> posted</h2>
+      <div class="filters">
+        <button class="on">all</button>
+        <button>active</button>
+        <button>flagged</button>
+        <button>relieved</button>
+        <button>by council</button>
+        <button>by mission</button>
+      </div>
+    </header>
+
+    <div class="swarm">
+
+      <!-- Council band: Praesidium -->
+      <div class="council-band">
+        <span class="lbl">— council</span>
+        <span class="name">Praesidium</span>
+        <span class="topic">Should the Forum charter be amended for parallel debate?</span>
+        <span class="meta">round 4 / 6</span>
+        <span class="meta">38s</span>
+      </div>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip thinking"></span>
+          <span class="agent__call">SCRIVENER</span>
+          <span class="agent__role">chair</span>
+        </div>
+        <div class="agent__task">Synthesizing dissenting views from <span class="acc">oracle-2</span> on charter amendment</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 64%"></i></div>
+          <span class="agent__phase">phase 4 · 64%</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>14.2k</b></span><span>beat <b>0.3s</b></span><span>uptime <b>22m</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip"></span>
+          <span class="agent__call">ORACLE·1</span>
+          <span class="agent__role">advocate</span>
+        </div>
+        <div class="agent__task">Posted · awaiting chair's synthesis to deliver counter-position</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 100%"></i></div>
+          <span class="agent__phase">held · ready</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>11.8k</b></span><span>beat <b>—</b></span><span>uptime <b>22m</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip"></span>
+          <span class="agent__call">ORACLE·2</span>
+          <span class="agent__role">dissenter</span>
+        </div>
+        <div class="agent__task">Position delivered · 3 objections lodged, awaiting reply</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 100%"></i></div>
+          <span class="agent__phase">held · ready</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>13.4k</b></span><span>beat <b>—</b></span><span>uptime <b>22m</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip warn"></span>
+          <span class="agent__call">ARCHIVIST</span>
+          <span class="agent__role">research</span>
+        </div>
+        <div class="agent__task">Tool wait · <span class="acc">vault.search</span> queued behind ledger.lookup (4)</div>
+        <div class="agent__meter">
+          <div class="agent__bar warn"><i style="width: 28%"></i></div>
+          <span class="agent__phase">queued · 28%</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>8.1k</b></span><span>beat <b>—</b></span><span>uptime <b>22m</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip"></span>
+          <span class="agent__call">QUILL</span>
+          <span class="agent__role">scribe</span>
+        </div>
+        <div class="agent__task">Recording transcript · 142 entries, ledger flushed</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 100%"></i></div>
+          <span class="agent__phase">streaming</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>5.9k</b></span><span>beat <b>0.1s</b></span><span>uptime <b>22m</b></span></div>
+      </article>
+
+      <!-- Council band: Cartographers -->
+      <div class="council-band">
+        <span class="lbl">— team</span>
+        <span class="name">Cartographers</span>
+        <span class="topic">Map the unindexed regions of the research vault — return a survey by 18:00</span>
+        <span class="meta">7 posted · 1 retry · 1 relieved</span>
+        <span class="meta">2m 04s</span>
+      </div>
+
+      <article class="agent focused">
+        <div class="agent__head">
+          <span class="agent__pip thinking"></span>
+          <span class="agent__call">COMPASS</span>
+          <span class="agent__role">lead</span>
+        </div>
+        <div class="agent__task">Coordinating sweep across 6 surveyors · <span class="acc">azimuth</span> and <span class="acc">plumb</span> reporting</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 41%"></i></div>
+          <span class="agent__phase">survey · 41%</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>22.7k</b></span><span>beat <b>0.4s</b></span><span>uptime <b>2m04</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip"></span>
+          <span class="agent__call">AZIMUTH</span>
+          <span class="agent__role">surveyor</span>
+        </div>
+        <div class="agent__task">Sweeping NE quadrant · 412 documents indexed</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 58%"></i></div>
+          <span class="agent__phase">sweep · 58%</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>9.4k</b></span><span>beat <b>0.2s</b></span><span>uptime <b>2m04</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip"></span>
+          <span class="agent__call">PLUMB</span>
+          <span class="agent__role">surveyor</span>
+        </div>
+        <div class="agent__task">Sweeping SE quadrant · 388 documents indexed</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 54%"></i></div>
+          <span class="agent__phase">sweep · 54%</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>9.0k</b></span><span>beat <b>0.2s</b></span><span>uptime <b>2m04</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip warn"></span>
+          <span class="agent__call">SEXTANT</span>
+          <span class="agent__role">surveyor</span>
+        </div>
+        <div class="agent__task">Retry 2/3 · vault.read returned 503 on shelf <span class="acc">M-04</span></div>
+        <div class="agent__meter">
+          <div class="agent__bar warn"><i style="width: 33%"></i></div>
+          <span class="agent__phase">retry · 33%</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>6.8k</b></span><span>beat <b>—</b></span><span>uptime <b>2m04</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip"></span>
+          <span class="agent__call">THEODOLITE</span>
+          <span class="agent__role">surveyor</span>
+        </div>
+        <div class="agent__task">Sweeping SW quadrant · 401 documents indexed</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 56%"></i></div>
+          <span class="agent__phase">sweep · 56%</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>9.2k</b></span><span>beat <b>0.2s</b></span><span>uptime <b>2m04</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip"></span>
+          <span class="agent__call">CHAIN</span>
+          <span class="agent__role">surveyor</span>
+        </div>
+        <div class="agent__task">Sweeping NW quadrant · 376 documents indexed</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 52%"></i></div>
+          <span class="agent__phase">sweep · 52%</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>8.9k</b></span><span>beat <b>0.3s</b></span><span>uptime <b>2m04</b></span></div>
+      </article>
+
+      <!-- Council band: Smiths -->
+      <div class="council-band">
+        <span class="lbl">— team</span>
+        <span class="name">Smiths</span>
+        <span class="topic">Forge the new authentication primitives · halted on hammer fault</span>
+        <span class="meta">5 posted · 1 halted</span>
+        <span class="meta">11m 32s</span>
+      </div>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip thinking"></span>
+          <span class="agent__call">BELLOWS</span>
+          <span class="agent__role">forger</span>
+        </div>
+        <div class="agent__task">Drafting JWT rotation contract · 3 of 7 cases covered</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 43%"></i></div>
+          <span class="agent__phase">forge · 43%</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>16.1k</b></span><span>beat <b>0.5s</b></span><span>uptime <b>11m</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip crit"></span>
+          <span class="agent__call">HAMMER</span>
+          <span class="agent__role">forger</span>
+        </div>
+        <div class="agent__task">Halted · panic in worker harness · awaiting watch-officer</div>
+        <div class="agent__meter">
+          <div class="agent__bar crit"><i style="width: 71%"></i></div>
+          <span class="agent__phase">fault · 71%</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>19.8k</b></span><span>beat <b>—</b></span><span>uptime <b>11m</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip"></span>
+          <span class="agent__call">ANVIL</span>
+          <span class="agent__role">foreman</span>
+        </div>
+        <div class="agent__task">Posted · holding fixture for hammer's recovery</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 100%"></i></div>
+          <span class="agent__phase">held</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>4.2k</b></span><span>beat <b>—</b></span><span>uptime <b>11m</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip"></span>
+          <span class="agent__call">TONGS</span>
+          <span class="agent__role">forger</span>
+        </div>
+        <div class="agent__task">Holding draft · pending bellows' contract</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 100%"></i></div>
+          <span class="agent__phase">held</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>3.9k</b></span><span>beat <b>—</b></span><span>uptime <b>11m</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip"></span>
+          <span class="agent__call">QUENCH</span>
+          <span class="agent__role">tester</span>
+        </div>
+        <div class="agent__task">Posted · ready to harden contract once forged</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 100%"></i></div>
+          <span class="agent__phase">ready</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>2.1k</b></span><span>beat <b>—</b></span><span>uptime <b>11m</b></span></div>
+      </article>
+
+      <!-- Lone agents band -->
+      <div class="council-band">
+        <span class="lbl">— lone</span>
+        <span class="name">Solo Stations</span>
+        <span class="topic">Long-running watchers and one-shot envoys — no council affiliation</span>
+        <span class="meta">8 posted · 2 idle</span>
+        <span class="meta">—</span>
+      </div>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip thinking"></span>
+          <span class="agent__call">AURORA</span>
+          <span class="agent__role">analyst</span>
+        </div>
+        <div class="agent__task">Drafting evening brief · sources from <span class="acc">3 councils</span></div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 73%"></i></div>
+          <span class="agent__phase">draft · 73%</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>31.4k</b></span><span>beat <b>0.4s</b></span><span>uptime <b>22s</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip"></span>
+          <span class="agent__call">VESPER</span>
+          <span class="agent__role">watcher</span>
+        </div>
+        <div class="agent__task">Long-poll · email channel · 0 events since last beat</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 100%"></i></div>
+          <span class="agent__phase">listening</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>0.4k</b></span><span>beat <b>14s</b></span><span>uptime <b>4h12m</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip"></span>
+          <span class="agent__call">MATINS</span>
+          <span class="agent__role">watcher</span>
+        </div>
+        <div class="agent__task">Long-poll · calendar · next event 19:30</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 100%"></i></div>
+          <span class="agent__phase">listening</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>0.6k</b></span><span>beat <b>22s</b></span><span>uptime <b>6h44m</b></span></div>
+      </article>
+
+      <article class="agent">
+        <div class="agent__head">
+          <span class="agent__pip dim"></span>
+          <span class="agent__call">CIPHER</span>
+          <span class="agent__role">cryptographer</span>
+        </div>
+        <div class="agent__task">Idle · last task closed at 16:40</div>
+        <div class="agent__meter">
+          <div class="agent__bar"><i style="width: 0%"></i></div>
+          <span class="agent__phase">idle · 0%</span>
+        </div>
+        <div class="agent__foot"><span>tokens <b>—</b></span><span>beat <b>—</b></span><span>idle <b>1h02m</b></span></div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ============================ INSPECTOR ============================ -->
+  <aside class="inspector" aria-label="focused subject">
+    <header class="inspector__head">
+      <span class="inspector__eyebrow">— focused subject · team lead</span>
+      <span class="inspector__title">Compass</span>
+      <span class="inspector__sub">Cartographers · posted 2m 04s · model claude-sonnet-4-5</span>
+    </header>
+
+    <section class="insp-section">
+      <h3><span>orders</span><span class="acc">2 of 6</span></h3>
+      <div class="plan-step done"><span class="mark">✓</span><span class="body">Confirm vault topology with archivist</span></div>
+      <div class="plan-step done"><span class="mark">✓</span><span class="body">Partition the vault into 6 quadrants</span></div>
+      <div class="plan-step now"><span class="mark">▸</span><span class="body">Dispatch surveyors and collect their indexes</span></div>
+      <div class="plan-step"><span class="mark">·</span><span class="body">Reconcile cross-quadrant duplicates</span></div>
+      <div class="plan-step"><span class="mark">·</span><span class="body">Compile survey report</span></div>
+      <div class="plan-step"><span class="mark">·</span><span class="body">Deliver to scrivener by 18:00</span></div>
+    </section>
+
+    <section class="insp-section">
+      <h3><span>transcript stream</span><span class="acc">latest 4</span></h3>
+      <div class="transcript">
+        <div class="turn"><div class="who">compass · 17:41:53</div><div class="body">Sextant has missed two beats. Holding its quadrant open for one more retry; if it falls, plumb absorbs M-04.</div></div>
+        <div class="tool ok"><span class="lbl">tool</span><span class="arg">survey.collate(quadrants=[NE,SE,SW,NW])</span><span class="t">+1.2s · ok</span></div>
+        <div class="turn"><div class="who peer">azimuth · 17:41:48</div><div class="body">NE complete. 412 indexed, 3 unreadable. Handing back.</div></div>
+        <div class="tool"><span class="lbl">tool</span><span class="arg">vault.search(prefix="M-04")</span><span class="t">in flight</span></div>
+        <div class="turn"><div class="who">compass · 17:41:39</div><div class="body">Acknowledged. Cross-checking against archivist's topology map.</div></div>
+      </div>
+    </section>
+
+    <section class="insp-section">
+      <h3><span>tools in flight</span><span class="acc">3</span></h3>
+      <div class="transcript">
+        <div class="tool"><span class="lbl">azimuth</span><span class="arg">vault.read(NE/*)</span><span class="t">+0.8s</span></div>
+        <div class="tool warn"><span class="lbl">sextant</span><span class="arg">vault.read(M-04)</span><span class="t">retry 2/3</span></div>
+        <div class="tool"><span class="lbl">compass</span><span class="arg">survey.collate</span><span class="t">+1.2s</span></div>
+      </div>
+    </section>
+
+    <section class="insp-section">
+      <h3><span>dependents</span><span class="acc">3</span></h3>
+      <div class="deps">
+        <div class="dep"><span class="pip" style="background: var(--ok);"></span><span>scrivener</span><span class="meta">awaits report</span></div>
+        <div class="dep"><span class="pip" style="background: var(--warn);"></span><span>aurora</span><span class="meta">includes in brief</span></div>
+        <div class="dep"><span class="pip" style="background: var(--info);"></span><span>postern.ledger</span><span class="meta">audits output</span></div>
+      </div>
+    </section>
+  </aside>
+
+  <!-- ============================ DRAWER ============================ -->
+  <footer class="drawer">
+    <div class="drawer__log">
+      <div class="drawer__h"><span>fleet event log · live</span><span class="acc">17:42:08 utc · 1,847 events</span></div>
+
+      <div class="log-row">
+        <span class="t">17:42:07</span>
+        <span class="lvl info">info</span>
+        <span class="src">compass</span>
+        <span class="msg">azimuth returned NE quadrant index (412 docs)</span>
+      </div>
+      <div class="log-row">
+        <span class="t">17:42:04</span>
+        <span class="lvl warn">warn</span>
+        <span class="src">sextant</span>
+        <span class="msg">vault.read shelf M-04 returned 503 — retry 2/3 scheduled</span>
+      </div>
+      <div class="log-row">
+        <span class="t">17:42:01</span>
+        <span class="lvl ok">ok</span>
+        <span class="src">aurora</span>
+        <span class="msg">draft section 4 of 6 complete · 31.4k tokens</span>
+      </div>
+      <div class="log-row">
+        <span class="t">17:41:58</span>
+        <span class="lvl crit">crit</span>
+        <span class="src">hammer</span>
+        <span class="msg">worker harness panic · station halted, awaiting watch-officer</span>
+      </div>
+      <div class="log-row">
+        <span class="t">17:41:54</span>
+        <span class="lvl info">info</span>
+        <span class="src">scrivener</span>
+        <span class="msg">opened round 4 of praesidium debate · 5 voices, 38s budget</span>
+      </div>
+      <div class="log-row">
+        <span class="t">17:41:50</span>
+        <span class="lvl info">info</span>
+        <span class="src">forum</span>
+        <span class="msg">orator-a and orator-b dispatched on charter synthesis · parallel</span>
+      </div>
+      <div class="log-row">
+        <span class="t">17:41:47</span>
+        <span class="lvl ok">ok</span>
+        <span class="src">postern</span>
+        <span class="msg">ledger reconciled · 142 transcript entries flushed</span>
+      </div>
+      <div class="log-row">
+        <span class="t">17:41:42</span>
+        <span class="lvl info">info</span>
+        <span class="src">cipher</span>
+        <span class="msg">station relieved · idle, awaiting orders</span>
+      </div>
+      <div class="log-row">
+        <span class="t">17:41:38</span>
+        <span class="lvl warn">warn</span>
+        <span class="src">archivist</span>
+        <span class="msg">tool queue depth 4 on vault.search · estimated wait 8s</span>
+      </div>
+      <div class="log-row">
+        <span class="t">17:41:33</span>
+        <span class="lvl ok">ok</span>
+        <span class="src">cartographers</span>
+        <span class="msg">team posted · 7 surveyors, 1 lead, mission orient·02</span>
+      </div>
+    </div>
+
+    <div class="drawer__dispatch">
+      <h3>dispatch · issue orders</h3>
+      <div class="dispatch__field">
+        <div><span class="prompt">rampart&gt;</span> <span class="input">convene postern · audit hammer fault</span></div>
+      </div>
+      <div class="dispatch-actions">
+        <button>convene</button>
+        <button>relieve</button>
+        <button>post</button>
+        <button>recall</button>
+        <button>amend</button>
+        <button class="crit">halt fleet</button>
+      </div>
+    </div>
+  </footer>
+
+</div>
+
+</body>
+</html>

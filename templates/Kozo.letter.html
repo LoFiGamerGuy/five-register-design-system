@@ -1,0 +1,335 @@
+<!doctype html>
+<!--
+  ============================================================
+  KOZO — soul-register correspondence template
+  ============================================================
+  Kozo is the inner-bark fiber of the paper-mulberry tree.
+  Traditional Japanese letters and certificates are written
+  on it; the sheet itself is the artifact, not just the
+  carrier of words.
+
+  This file is the canonical correspondence template.
+  Use for: letters, transmittal pages, printed cards,
+  thank-you notes, decline-with-warmth, any artifact a
+  person will receive and (perhaps) keep.
+
+  Structurally simple by design. A letter is one column,
+  one voice, one signature. The discipline is in restraint.
+  ============================================================
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Kozo — A Letter</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="base.css">
+<style>
+  /* — Kozo: a single sheet. Generous margins; one column; one voice. — */
+
+  body { background: var(--bg-2); }
+
+  .sheet {
+    max-width: 680px;
+    margin: var(--space-9) auto;
+    padding: var(--space-10) var(--space-9);
+    background: var(--bg);
+    box-shadow: var(--shadow-soft);
+    position: relative;
+  }
+  /* the sheet has a top edge that reads as paper grain */
+  .sheet::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background:
+      linear-gradient(90deg,
+        var(--copper-deep) 0%,
+        var(--copper-deep) 88px,
+        transparent 88px,
+        transparent 100%);
+  }
+
+  /* ── Letterhead ───────────────────────────────────── */
+  .letterhead {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    padding-bottom: var(--space-6);
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: var(--space-7);
+    gap: var(--space-5);
+  }
+  .letterhead__name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--fs-2xl);
+    line-height: 1;
+    letter-spacing: var(--tracking-tight);
+    color: var(--sumi);
+  }
+  .letterhead__motto {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-md);
+    color: var(--fg-3);
+    margin-top: var(--space-2);
+  }
+  .letterhead__meta {
+    text-align: right;
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+    line-height: 1.7;
+  }
+  .letterhead__meta b { color: var(--fg); font-weight: 400; }
+
+  /* ── Recipient block — typewritten cadence ────────── */
+  .recipient {
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    line-height: 1.55;
+    color: var(--fg-2);
+    margin-bottom: var(--space-7);
+  }
+  .recipient b { color: var(--fg); font-weight: 400; }
+
+  /* ── Date line ────────────────────────────────────── */
+  .dateline {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-md);
+    color: var(--fg-2);
+    margin-bottom: var(--space-6);
+  }
+
+  /* ── Salutation + body ────────────────────────────── */
+  .salutation {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: var(--fs-lg);
+    color: var(--sumi);
+    margin-bottom: var(--space-5);
+  }
+
+  .letter p {
+    font-size: var(--fs-md);
+    line-height: 1.75;
+    color: var(--fg);
+    margin-bottom: var(--space-5);
+    text-wrap: pretty;
+  }
+  .letter p + p { text-indent: 1.5em; margin-top: -8px; }
+  .letter em { font-style: italic; color: var(--fg); }
+
+  /* opening drop — first letter of the first paragraph */
+  .letter__open::first-letter {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 3.6em;
+    line-height: 0.9;
+    float: left;
+    color: var(--copper-deep);
+    padding: 6px 12px 0 0;
+  }
+
+  /* a quiet ornamental break between movements of the letter */
+  .break {
+    text-align: center;
+    margin: var(--space-7) 0;
+    color: var(--copper);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    letter-spacing: 0.6em;
+  }
+
+  /* a marginalia line — author's whispered aside */
+  .aside-line {
+    border-left: 1px solid var(--copper);
+    padding-left: var(--space-5);
+    margin: var(--space-6) 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-md);
+    color: var(--fg-2);
+    line-height: 1.55;
+  }
+  .aside-line__caption {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--copper-deep);
+    font-style: normal;
+    margin-bottom: var(--space-2);
+    display: block;
+  }
+
+  /* ── Closing ──────────────────────────────────────── */
+  .closing {
+    margin-top: var(--space-8);
+  }
+  .closing__valediction {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-lg);
+    color: var(--fg);
+    margin-bottom: var(--space-5);
+  }
+  .signature-line {
+    /* the line a fountain pen would have made */
+    width: 220px;
+    border-bottom: 1px solid var(--sumi);
+    padding-bottom: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+  .signature-line__mark {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 32px;
+    color: var(--sumi);
+    line-height: 1;
+    /* a slight tilt so it reads as ink, not type */
+    transform: rotate(-2deg);
+    transform-origin: 0 50%;
+    display: inline-block;
+  }
+  .signature__name {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg);
+  }
+  .signature__role {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  /* ── Postscript & enclosures ─────────────────────── */
+  .postscript {
+    margin-top: var(--space-7);
+    padding-top: var(--space-5);
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-md);
+    line-height: 1.6;
+    color: var(--fg-2);
+  }
+  .postscript b {
+    font-style: normal;
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--copper-deep);
+    font-weight: 400;
+    margin-right: var(--space-3);
+  }
+
+  .enclosures {
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px dotted var(--rule);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+    line-height: 1.7;
+  }
+  .enclosures b { color: var(--copper-deep); font-weight: 400; margin-right: var(--space-3); }
+
+  /* ── Print: keep the sheet edge, drop the wrapper bg ── */
+  @media print {
+    body { background: var(--bg); }
+    .sheet { box-shadow: none; margin: 0; max-width: none; padding: 18mm 18mm; }
+  }
+
+  @media (max-width: 720px) {
+    .sheet { margin: var(--space-5); padding: var(--space-7) var(--space-6); }
+    .letterhead { grid-template-columns: 1fr; align-items: start; }
+    .letterhead__meta { text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<article class="sheet">
+
+  <header class="letterhead">
+    <div>
+      <div class="letterhead__name">Atrium Studio</div>
+      <div class="letterhead__motto">— a small atelier of templates and disciplines</div>
+    </div>
+    <div class="letterhead__meta">
+      <div><b>Ref.</b> KZ-2026-0501-014</div>
+      <div><b>Sheet</b> 1 of 1</div>
+      <div><b>By hand</b></div>
+    </div>
+  </header>
+
+  <div class="recipient">
+    <b>To</b><br>
+    H. Tanaka<br>
+    Editor-at-large, <em>Lantern</em><br>
+    7 Asakusa-bashi, Tōkyō
+  </div>
+
+  <div class="dateline">— the first of May, two thousand twenty-six</div>
+
+  <div class="salutation">Dear Hiroshi,</div>
+
+  <div class="letter">
+    <p class="letter__open">Thank you for the manuscript. It arrived on Tuesday, in a paper sleeve that smelled faintly of cedar; I read it that night by the south window, and again the next morning over coffee, which is the test I trust most. It holds. The second reading found the same passages I had marked the first time, which means they are not accidents.</p>
+
+    <p>I have a small number of editorial notes — not many, and none structural. Most concern the cadence of paragraph endings; one or two ask for a footnote where the argument is currently asking the reader to take you on faith. I will send them in a separate letter, with the marked galley, by the end of the week.</p>
+
+    <p>What I want to say in <em>this</em> letter is more particular. The piece on porches is the best thing you have written for us. I do not think you should let it go without a fight when the volume is set, even if the page count argues otherwise. Cut something else if we run long. We will find the room.</p>
+
+    <div class="aside-line">
+      <span class="aside-line__caption">— in the margin</span>
+      The metaphor of the engawa as <em>a place that has not decided yet</em> is the line the volume should be built around. Everything else can defer to it.
+    </div>
+
+    <p>On the cover question: I have come around to your view. Champagne over graphite, copper for the rule, your name set small and italic at the foot. Not on the spine — only on the face. The spine should carry the volume number alone. We can sign-off on this when you next visit the studio; I would like you to see the trial page before we commit to the printing.</p>
+
+    <p>One last thing, since I have you. The colophon you proposed is too modest. Your essays have done the volume's work; please let the colophon say so plainly. I have suggested a revision in the enclosed proof. If you object to any of it, say so, and we will set it the way you wrote it.</p>
+
+    <div class="break">— · — · —</div>
+
+    <p>I hope the spring is treating the garden well. Please give my regards to your wife and to the cat, who I am told has taken to sleeping on the page proofs. She has good taste.</p>
+  </div>
+
+  <div class="closing">
+    <div class="closing__valediction">Yours, in the practice,</div>
+
+    <div class="signature-line">
+      <span class="signature-line__mark">A. Soseki</span>
+    </div>
+    <div class="signature__name">Akira Soseki</div>
+    <div class="signature__role">Editor-in-chief · Atrium Studio</div>
+  </div>
+
+  <div class="postscript">
+    <b>P.S.</b> The orchid you sent at the new year has flowered for the third time. I am, as ever, surprised by what survives my attention.
+  </div>
+
+  <div class="enclosures">
+    <b>Enclosed</b> Editorial galley, marked · Trial page (cover) · Revised colophon, draft 02
+  </div>
+
+</article>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Folio — Soul-Layer Memo Template</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="base.css">
+<style>
+  .memo { max-width: 760px; margin: 0 auto; padding: var(--space-9) var(--space-6); }
+  .memo__head {
+    border-top: 3px solid var(--sumi);
+    border-bottom: 1px solid var(--sumi);
+    padding: var(--space-5) 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-2) var(--space-5);
+    margin-bottom: var(--space-7);
+  }
+  .memo__head dt {
+    font-family: var(--font-mono); font-size: var(--fs-2xs);
+    text-transform: uppercase; letter-spacing: var(--tracking-caps); color: var(--fg-3);
+  }
+  .memo__head dd { font-size: var(--fs-sm); color: var(--fg); }
+  .memo__head dd strong { font-weight: 600; }
+  .memo__title {
+    font-family: var(--font-display); font-size: var(--fs-2xl); line-height: 1.15;
+    font-weight: 400; font-style: italic; letter-spacing: -0.015em;
+    margin-bottom: var(--space-7);
+  }
+  .tldr {
+    background: var(--bone-2);
+    border-left: 2px solid var(--copper);
+    padding: var(--space-5);
+    margin-bottom: var(--space-7);
+  }
+  .tldr__label {
+    font-family: var(--font-mono); font-size: var(--fs-2xs);
+    text-transform: uppercase; letter-spacing: var(--tracking-caps);
+    color: var(--copper); margin-bottom: var(--space-3);
+  }
+  .tldr p { font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: var(--fs-md); line-height: 1.5; color: var(--fg); }
+  .memo h2 {
+    font-family: var(--font-mono); font-size: var(--fs-xs); font-weight: 400;
+    text-transform: uppercase; letter-spacing: var(--tracking-caps); color: var(--fg);
+    margin-top: var(--space-7); margin-bottom: var(--space-3);
+    padding-bottom: var(--space-2); border-bottom: 1px solid var(--rule);
+  }
+  .memo h2 .num { color: var(--copper); margin-right: var(--space-3); }
+  .memo p { font-size: var(--fs-base); line-height: 1.65; color: var(--fg); margin-bottom: var(--space-3); }
+  .memo ul li {
+    font-size: var(--fs-base); line-height: 1.55;
+    padding: 6px 0 6px 24px; position: relative;
+  }
+  .memo ul li::before {
+    content: "—"; position: absolute; left: 0;
+    color: var(--copper); font-family: var(--font-mono);
+  }
+  .signature { margin-top: var(--space-8); padding-top: var(--space-5); border-top: 1px solid var(--sumi); }
+  .signature__name { font-family: var(--font-display); font-style: italic; font-size: var(--fs-lg); color: var(--fg); }
+  .signature__title { font-family: var(--font-mono); font-size: var(--fs-2xs); text-transform: uppercase; letter-spacing: var(--tracking-caps); color: var(--fg-3); margin-top: var(--space-1); }
+</style>
+</head>
+<body>
+
+<article class="memo">
+
+  <header class="masthead">
+    <div class="masthead__brand">Folio <span style="font-style: normal; color: var(--fg-3);">— a memorandum</span></div>
+    <div class="masthead__meta">No. 47 · Confidential</div>
+  </header>
+
+  <dl class="memo__head">
+    <dt>To</dt>      <dd><strong>The team</strong></dd>
+    <dt>From</dt>    <dd>Your Name</dd>
+    <dt>Date</dt>    <dd>30 April 2026</dd>
+    <dt>Re</dt>      <dd><strong>Adopting a shared template system for written outputs</strong></dd>
+  </dl>
+
+  <h1 class="memo__title">A small proposal: stop deciding what fonts to use, and start deciding what to say.</h1>
+
+  <div class="tldr">
+    <div class="tldr__label">tl;dr</div>
+    <p>We are spending real time relitigating typographic basics on every document. A shared template system removes that cost without removing flexibility, and pays back inside three artifacts. I would like to roll it out next sprint.</p>
+  </div>
+
+  <h2><span class="num">01</span>Context</h2>
+  <p>Across the last quarter, six different team members produced documents in five different styles. Reviewers spent measurable time pointing out the same kinds of inconsistencies — header weights, accent colors, code-block treatments — instead of engaging with substance.</p>
+
+  <h2><span class="num">02</span>Proposal</h2>
+  <p>A single set of template files (deck, document, memo, dashboard, watch report) sharing one tokens file. All future external-facing artifacts start from these. Internal scratch documents are exempt.</p>
+  <ul>
+    <li>One serif (Cormorant), one humanist sans (Inter), one mono (JetBrains Mono).</li>
+    <li>Bone paper, sumi ink, champagne and copper for moments of attention.</li>
+    <li>4px spacing grid, 66-character reading column for body copy.</li>
+    <li>Cockpit register available for internal tooling and ops surfaces.</li>
+  </ul>
+
+  <h2><span class="num">03</span>Cost</h2>
+  <p>Two to three days of one engineer's time to wire it into our generation tooling. The templates themselves already exist.</p>
+
+  <h2><span class="num">04</span>Recommendation</h2>
+  <p>Approve for adoption starting the May 5 sprint. I'll own the rollout and the first round of feedback collection at the end of May. If you would like to see the templates before signing off, they are linked at the bottom.</p>
+
+  <div class="aside" style="border-color: var(--copper);">
+    <div class="aside__label" style="color: var(--copper);">For the skeptics</div>
+    <p>This is reversible. If at the end of May the system produces more friction than it removes, we revert with no penalty. The templates remain available to anyone who wants them.</p>
+  </div>
+
+  <div class="signature">
+    <div class="signature__name">Your Name</div>
+    <div class="signature__title">your.name@email.com · ext. 4711</div>
+  </div>
+
+  <footer class="colophon">
+    <span>Folio · Soul Register · Memo</span>
+    <span>1 of 1 · April 2026</span>
+  </footer>
+
+</article>
+
+</body>
+</html>

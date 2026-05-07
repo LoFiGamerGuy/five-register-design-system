@@ -1,0 +1,644 @@
+/* ============================================================
+   HIROMA — the synthesis register
+   "The great room" — the one space in a traditional house
+   where guests are received, family eats, and quiet work
+   happens. The room that sees every register.
+
+   Hiroma is NOT a fourth visual system. It is a compositional
+   system that orchestrates the existing three vocabularies
+   (soul prose · genkan structure · cockpit instrumentation)
+   in a single artifact, with rules that keep them in tune.
+
+   Use for: studio about-pages, case studies, press portfolios,
+   long-form portfolio reads, year-in-review, anything where
+   a maker is showing both the *practice* and the *outputs*.
+
+   Activate on <html> or any container:
+     <html data-register="hiroma">
+
+   Inherits: bone surface (genkan light), Cormorant + Inter +
+   JetBrains Mono, all of base.css. Adds .hi-* primitives that
+   know how to set soul-prose blocks, genkan structural blocks,
+   and cockpit instrument blocks side-by-side.
+
+   Components:
+     .hi-stage           page shell — top rule, brand, breadcrumb instruments
+     .hi-overture        opening movement — hero with prose-leading hierarchy
+     .hi-sash            horizontal instrument strip (cockpit-coded)
+     .hi-room            two-column movement: prose + objects
+     .hi-prose           soul-register prose block (always inside hi-room)
+     .hi-objects         genkan-register card grid (always paired with hi-prose)
+     .hi-plate           a single project / case-study plate
+     .hi-instruments     cockpit-coded data panel
+     .hi-pillar          a credo line — display serif at scale, alone
+     .hi-ledger          press / clients table
+     .hi-sign            studio sign-off / colophon
+   ============================================================ */
+
+@import url('base.css');
+
+[data-register="hiroma"] {
+  background: var(--bg);
+  color: var(--fg);
+  /* Hiroma uses genkan's tighter caps tracking */
+  --tracking-caps: 0.10em;
+  --link: var(--copper-deep);
+  /* the studio-pick deep accent */
+  --accent-deep: var(--champagne-deep);
+}
+
+/* ── Container ──────────────────────────────────────────── */
+.hi-container {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--space-7);
+}
+.hi-container--narrow { max-width: 920px; }
+
+/* ── Stage — top bar with brand, breadcrumb, instrument cells — */
+.hi-stage {
+  border-top: 3px solid var(--fg);
+  border-bottom: 1px solid var(--rule);
+  padding: var(--space-4) 0;
+}
+.hi-stage__inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-6);
+  align-items: center;
+}
+.hi-stage__brand {
+  display: flex; align-items: baseline; gap: var(--space-3);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  font-size: var(--fs-md);
+  color: var(--fg);
+}
+.hi-stage__brand .glyph {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 2px 6px;
+}
+.hi-stage__crumb {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.hi-stage__crumb b { color: var(--fg); font-weight: 400; }
+.hi-stage__inst {
+  display: flex; gap: var(--space-5);
+}
+.hi-stage__inst .cell {
+  display: flex; flex-direction: column;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  text-align: right;
+  line-height: 1.4;
+}
+.hi-stage__inst .cell .k { color: var(--fg-3); }
+.hi-stage__inst .cell .v { color: var(--fg); font-variant-numeric: tabular-nums; }
+
+/* ── Overture — opening movement — */
+.hi-overture {
+  padding: var(--space-10) 0 var(--space-9);
+  border-bottom: 1px solid var(--rule);
+}
+.hi-overture__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--space-5);
+}
+.hi-overture__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(56px, 9vw, 128px);
+  line-height: 0.96;
+  letter-spacing: -0.025em;
+  color: var(--fg);
+  max-width: 14ch;
+  margin-bottom: var(--space-7);
+}
+.hi-overture__title em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--copper-deep);
+}
+.hi-overture__lede {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--space-7);
+  align-items: end;
+}
+.hi-overture__lede p {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-lg);
+  line-height: 1.45;
+  color: var(--fg);
+  max-width: 50ch;
+  border-left: 1px solid var(--accent);
+  padding-left: var(--space-5);
+}
+.hi-overture__sig {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--fg-3);
+  line-height: 1.7;
+  text-align: right;
+}
+.hi-overture__sig b { color: var(--fg); font-weight: 400; }
+@media (max-width: 880px) {
+  .hi-overture__lede { grid-template-columns: 1fr; }
+  .hi-overture__sig { text-align: left; }
+}
+
+/* ── Sash — horizontal instrument strip — cockpit-coded —
+   used to put 4–6 KPI/metric cells under the overture or between rooms. */
+.hi-sash {
+  background: var(--shou);
+  color: var(--bone);
+  padding: var(--space-6) 0;
+}
+.hi-sash[data-tone="paper"] {
+  background: var(--bg-2);
+  color: var(--fg);
+  border-top: 1px solid var(--fg);
+  border-bottom: 1px solid var(--rule);
+}
+.hi-sash__inner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--space-5);
+}
+.hi-sash .cell {
+  display: flex; flex-direction: column;
+  border-left: 1px solid currentColor;
+  padding-left: var(--space-4);
+  opacity: 0.95;
+}
+.hi-sash .cell:first-child { border-left: 0; padding-left: 0; }
+.hi-sash .k {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: var(--space-2);
+}
+.hi-sash .v {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-2xl);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.015em;
+}
+.hi-sash[data-tone="paper"] .v { color: var(--fg); }
+.hi-sash .v em {
+  font-style: italic; font-weight: 300; opacity: 0.7;
+  font-size: 0.6em;
+  margin-left: 4px;
+}
+.hi-sash .foot {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  margin-top: var(--space-2);
+  opacity: 0.55;
+}
+
+/* ── Room — the canonical hiroma movement: prose left, objects right — */
+.hi-room {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: var(--space-9);
+  padding: var(--space-10) 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: start;
+}
+.hi-room--reverse { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); }
+.hi-room--reverse .hi-prose { order: 2; }
+.hi-room--reverse .hi-objects { order: 1; }
+@media (max-width: 980px) {
+  .hi-room, .hi-room--reverse { grid-template-columns: 1fr; gap: var(--space-7); }
+  .hi-room--reverse .hi-prose, .hi-room--reverse .hi-objects { order: initial; }
+}
+
+/* — Soul prose block — always lives inside .hi-room — */
+.hi-prose__num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--rule);
+}
+.hi-prose__num b { color: var(--fg); font-weight: 400; margin-left: var(--space-3); }
+.hi-prose__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-2xl);
+  line-height: 1.05;
+  letter-spacing: var(--tracking-tight);
+  color: var(--fg);
+  margin-bottom: var(--space-5);
+}
+.hi-prose__title em { font-style: italic; font-weight: 300; color: var(--fg-2); }
+.hi-prose__body p {
+  font-size: var(--fs-md);
+  line-height: 1.75;
+  color: var(--fg);
+  text-wrap: pretty;
+  margin-bottom: var(--space-4);
+  max-width: 56ch;
+}
+.hi-prose__body p em { font-style: italic; }
+.hi-prose__body p + p { text-indent: 1.5em; margin-top: -2px; }
+/* a soul-register pull — italic, copper rule */
+.hi-prose__pull {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-lg);
+  line-height: 1.4;
+  color: var(--fg);
+  border-left: 2px solid var(--copper);
+  padding-left: var(--space-5);
+  margin: var(--space-5) 0;
+  max-width: 38ch;
+}
+
+/* — Objects column — genkan card grid — */
+.hi-objects {
+  display: grid;
+  gap: var(--space-4);
+}
+.hi-objects[data-cols="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.hi-objects[data-cols="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 720px) {
+  .hi-objects[data-cols="2"], .hi-objects[data-cols="3"] { grid-template-columns: 1fr; }
+}
+
+/* — Plate — a single project card. Soul title + cockpit metrics inside genkan card — */
+.hi-plate {
+  background: var(--bg);
+  border: 1px solid var(--rule);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  transition: border-color var(--dur-fast) var(--ease),
+              transform var(--dur-base) var(--ease);
+}
+.hi-plate:hover { border-color: var(--fg); }
+.hi-plate__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.hi-plate__head .num { color: var(--accent); }
+.hi-plate__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--fs-xl);
+  line-height: 1.1;
+  color: var(--fg);
+}
+.hi-plate__client {
+  font-family: var(--font-body);
+  font-size: var(--fs-sm);
+  color: var(--fg-2);
+}
+.hi-plate__client b { color: var(--fg); font-weight: 500; }
+/* placeholder figure — bone surface, hairline rule, label */
+.hi-plate__fig {
+  background: var(--bg-2);
+  border: 1px solid var(--rule);
+  aspect-ratio: 4 / 3;
+  position: relative;
+  margin-top: var(--space-2);
+}
+.hi-plate__fig::before {
+  content: attr(data-label);
+  position: absolute;
+  top: var(--space-3); left: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.hi-plate__fig::after {
+  /* a single diagonal that reads as "image not yet typeset" */
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: linear-gradient(
+    135deg,
+    transparent 49.7%,
+    var(--rule) 49.7%,
+    var(--rule) 50.3%,
+    transparent 50.3%);
+}
+.hi-plate__metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  border-top: 1px solid var(--rule-faint);
+  padding-top: var(--space-3);
+  margin-top: auto;
+}
+.hi-plate__metrics .m {
+  display: flex; flex-direction: column;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  line-height: 1.3;
+}
+.hi-plate__metrics .m .k { color: var(--fg-3); }
+.hi-plate__metrics .m .v {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: var(--tracking-tight);
+  font-size: var(--fs-md);
+  color: var(--fg);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Pillar — a credo line. Display serif at scale, alone, italic. — */
+.hi-pillar {
+  padding: var(--space-10) 0;
+  text-align: left;
+  border-top: 1px solid var(--fg);
+  border-bottom: 1px solid var(--fg);
+  background: var(--bg-2);
+}
+.hi-pillar__num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--space-5);
+}
+.hi-pillar__line {
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(40px, 6vw, 88px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--fg);
+  max-width: 22ch;
+  text-wrap: balance;
+}
+.hi-pillar__line b { font-style: normal; font-weight: 400; color: var(--copper-deep); }
+.hi-pillar__attr {
+  margin-top: var(--space-6);
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+/* ── Instruments — cockpit-coded data panel inside hiroma. — */
+.hi-instruments {
+  background: var(--shou);
+  color: var(--bone);
+  padding: var(--space-8) 0;
+  font-feature-settings: "tnum";
+}
+.hi-instruments__head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  border-bottom: 1px solid color-mix(in oklab, var(--bone) 18%, transparent);
+  padding-bottom: var(--space-4);
+  margin-bottom: var(--space-6);
+  gap: var(--space-5);
+}
+.hi-instruments__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--fs-2xl);
+  line-height: 1;
+  color: var(--bone);
+}
+.hi-instruments__sub {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--champagne);
+  text-align: right;
+}
+.hi-instruments__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-5);
+}
+.hi-instruments .panel {
+  border: 1px solid color-mix(in oklab, var(--bone) 14%, transparent);
+  padding: var(--space-5);
+  display: flex; flex-direction: column; gap: var(--space-3);
+}
+.hi-instruments .panel .k {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--champagne);
+}
+.hi-instruments .panel .v {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-3xl);
+  line-height: 1;
+  color: var(--bone);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.hi-instruments .panel .v em {
+  font-style: italic;
+  font-weight: 300;
+  font-size: 0.5em;
+  margin-left: 6px;
+  color: color-mix(in oklab, var(--bone) 60%, transparent);
+}
+.hi-instruments .panel .note {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-sm);
+  color: color-mix(in oklab, var(--bone) 70%, transparent);
+  line-height: 1.5;
+}
+.hi-instruments .panel .bar {
+  height: 4px;
+  background: color-mix(in oklab, var(--bone) 12%, transparent);
+  position: relative;
+  margin-top: var(--space-2);
+}
+.hi-instruments .panel .bar::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: var(--pct, 50%);
+  background: var(--champagne);
+}
+
+/* ── Ledger — clients / press / engagements table — */
+.hi-ledger {
+  padding: var(--space-9) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.hi-ledger__head {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: var(--space-6);
+  align-items: baseline;
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--fg);
+  margin-bottom: var(--space-5);
+}
+.hi-ledger__num {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.hi-ledger__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: var(--fs-2xl);
+  line-height: 1.05;
+  color: var(--fg);
+}
+.hi-ledger__title em { font-style: italic; font-weight: 300; color: var(--fg-2); }
+.hi-ledger__count {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.hi-ledger table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.hi-ledger th, .hi-ledger td {
+  padding: var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--rule-faint);
+  text-align: left;
+  vertical-align: baseline;
+}
+.hi-ledger th {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--fg-3);
+}
+.hi-ledger td.year { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--accent); }
+.hi-ledger td.client { font-family: var(--font-body); font-size: var(--fs-md); color: var(--fg); font-weight: 500; }
+.hi-ledger td.role { font-family: var(--font-display); font-style: italic; font-size: var(--fs-md); color: var(--fg-2); }
+.hi-ledger td.tag {
+  font-family: var(--font-mono); font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps); text-transform: uppercase;
+  color: var(--fg-3);
+}
+
+/* ── Sign — the studio sign-off — */
+.hi-sign {
+  padding: var(--space-9) 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: var(--space-9);
+  border-top: 3px solid var(--fg);
+  margin-top: var(--space-7);
+}
+.hi-sign__name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--fs-3xl);
+  line-height: 1;
+  color: var(--fg);
+  margin-bottom: var(--space-4);
+}
+.hi-sign__role {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: var(--space-5);
+}
+.hi-sign__note {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-md);
+  line-height: 1.6;
+  color: var(--fg-2);
+  max-width: 50ch;
+}
+.hi-sign__meta {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--fg-3);
+  line-height: 1.9;
+  border-left: 1px solid var(--rule);
+  padding-left: var(--space-5);
+}
+.hi-sign__meta b { color: var(--fg); font-weight: 400; }
+@media (max-width: 880px) {
+  .hi-sign { grid-template-columns: 1fr; }
+  .hi-sign__meta { border-left: 0; border-top: 1px solid var(--rule); padding: var(--space-5) 0 0; }
+}
+
+@media print {
+  .hi-instruments, .hi-sash:not([data-tone="paper"]) {
+    background: transparent !important;
+    color: var(--fg) !important;
+  }
+  .hi-instruments .panel,
+  .hi-instruments__head { border-color: var(--rule) !important; }
+  .hi-instruments .panel .k,
+  .hi-instruments__sub,
+  .hi-instruments .panel .note { color: var(--fg-3) !important; }
+  .hi-instruments__title,
+  .hi-instruments .panel .v { color: var(--fg) !important; }
+}

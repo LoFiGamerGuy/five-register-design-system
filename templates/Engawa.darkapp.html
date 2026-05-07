@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<!--
+  ============================================================
+  ENGAWA — canonical dark-mode genkan reference
+  ============================================================
+  The engawa is the wood-floor veranda that runs along the
+  outside of a traditional Japanese house — the in-between
+  space at the threshold of inside and outside, often used
+  at night.
+
+  This file is the canonical dark-mode genkan surface.
+  Future agents building dark genkan UI should fork THIS,
+  not Vellum. It demonstrates every primitive in the dark
+  palette in real use, and ships a working light/dark toggle
+  in the top bar that flips data-mode on <html>.
+
+  Structural pattern matches Vellum (topbar + sidebar +
+  main + right rail) so the two read as a matched pair —
+  light and dark variants of the same in-product paradigm.
+
+  Subject matter: a late-night manuscript review session.
+  Manuscript queue · editorial notes · agent activity log
+  · session timer in the top bar.
+  ============================================================
+-->
+<html lang="en" data-register="genkan" data-mode="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Engawa — Atrium Studio</title>
+<link rel="stylesheet" href="genkan.css">
+<style>
+  /* — Engawa: dark in-product app shell. No inline style attrs. — */
+
+  body { background: var(--bg-2); }
+
+  .engawa {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 240px 1fr 320px;
+    grid-template-rows: 56px 1fr;
+    grid-template-areas:
+      "topbar topbar topbar"
+      "sidebar main rail";
+  }
+  @media (max-width: 1280px) {
+    .engawa {
+      grid-template-columns: 232px 1fr;
+      grid-template-areas:
+        "topbar topbar"
+        "sidebar main";
+    }
+    .eg-rail { display: none; }
+  }
+
+  /* ── TOP BAR ──────────────────────────────────────── */
+  .eg-top {
+    grid-area: topbar;
+    background: var(--bg);
+    border-bottom: 1px solid var(--rule);
+    display: flex; align-items: center;
+    padding: 0 var(--space-5);
+    gap: var(--space-5);
+  }
+  .eg-top__brand {
+    display: flex; align-items: baseline; gap: 10px;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-md);
+    letter-spacing: var(--tracking-tight);
+    color: var(--fg);
+  }
+  .eg-top__glyph {
+    font-family: var(--font-mono);
+    font-style: normal;
+    font-size: 10px;
+    letter-spacing: var(--tracking-caps);
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 2px 5px;
+  }
+  .eg-top__crumb {
+    display: flex; align-items: center; gap: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+    padding-left: var(--space-5);
+    border-left: 1px solid var(--rule);
+    margin-left: var(--space-3);
+  }
+  .eg-top__crumb b { color: var(--fg); font-weight: 400; }
+  .eg-top__sep { color: var(--fg-4); }
+  .eg-top__spacer { flex: 1; }
+
+  /* session timer — instrument cell, mono numerals */
+  .eg-session {
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 12px;
+    border: 1px solid var(--rule);
+    background: var(--bg-2);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-2);
+  }
+  .eg-session__pulse {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 6px var(--ok);
+    animation: eg-pulse 2s var(--ease) infinite;
+  }
+  .eg-session__t { color: var(--accent); font-variant-numeric: tabular-nums; }
+  .eg-session__lbl { color: var(--fg-3); }
+  @keyframes eg-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.35; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .eg-session__pulse { animation: none; }
+  }
+
+  /* light/dark toggle — segmented control */
+  .eg-mode {
+    display: inline-flex;
+    border: 1px solid var(--rule);
+    background: var(--bg-2);
+  }
+  .eg-mode__btn {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    padding: 7px 11px;
+    color: var(--fg-3);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  }
+  .eg-mode__btn:hover { color: var(--fg-2); }
+  .eg-mode__btn[aria-pressed="true"] {
+    color: var(--bg);
+    background: var(--accent);
+  }
+  .eg-mode__btn + .eg-mode__btn { border-left: 1px solid var(--rule); }
+
+  .eg-top__avatar {
+    width: 30px; height: 30px;
+    border: 1px solid var(--accent-deep);
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-md);
+    display: grid; place-items: center;
+    background: transparent;
+  }
+
+  /* ── SIDEBAR ──────────────────────────────────────── */
+  .eg-side {
+    grid-area: sidebar;
+    background: var(--bg);
+    border-right: 1px solid var(--rule);
+    padding: var(--space-5) 0;
+    display: flex; flex-direction: column;
+    overflow-y: auto;
+  }
+  .eg-side__group { padding: 0 var(--space-5) var(--space-6); }
+  .eg-side__group + .eg-side__group {
+    border-top: 1px solid var(--rule-faint);
+    padding-top: var(--space-5);
+  }
+  .eg-side__label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+    margin-bottom: var(--space-3);
+  }
+  .eg-side__item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 7px 10px;
+    margin: 0 -10px;
+    font-size: var(--fs-sm);
+    color: var(--fg-2);
+    cursor: pointer;
+    transition: color var(--dur-fast) var(--ease), background var(--dur-fast) var(--ease);
+  }
+  .eg-side__item:hover { color: var(--fg); background: var(--bg-2); }
+  .eg-side__item--active {
+    color: var(--fg);
+    background: var(--bg-2);
+    border-left: 2px solid var(--accent);
+    padding-left: 8px;
+  }
+  .eg-side__item .eg-side__count {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--fg-3);
+  }
+  .eg-side__row {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .eg-side__foot {
+    margin-top: auto;
+    padding: var(--space-5);
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+    display: flex; justify-content: space-between;
+  }
+
+  /* ── MAIN ─────────────────────────────────────────── */
+  .eg-main {
+    grid-area: main;
+    overflow-y: auto;
+    padding: var(--space-7);
+  }
+  .eg-head {
+    display: flex; align-items: end; justify-content: space-between;
+    padding-bottom: var(--space-5);
+    margin-bottom: var(--space-6);
+    border-bottom: 1px solid var(--fg);
+    gap: var(--space-6);
+  }
+  .eg-head__sub {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+    margin-bottom: var(--space-2);
+  }
+  .eg-head__title {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 44px;
+    line-height: 1;
+    letter-spacing: var(--tracking-tight);
+    color: var(--fg);
+  }
+  .eg-head__title em { font-style: italic; font-weight: 300; color: var(--accent); }
+  .eg-head__actions { display: flex; gap: var(--space-3); }
+
+  /* — KPI strip (dark) — */
+  .eg-kpis {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin-bottom: var(--space-7);
+    border: 1px solid var(--rule);
+    background: var(--bg);
+  }
+  .eg-kpi { padding: var(--space-5); border-right: 1px solid var(--rule); }
+  .eg-kpi:last-child { border-right: 0; }
+  .eg-kpi__label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+    margin-bottom: var(--space-3);
+  }
+  .eg-kpi__value {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1;
+    letter-spacing: var(--tracking-tight);
+    font-variant-numeric: tabular-nums;
+    color: var(--fg);
+  }
+  .eg-kpi__value sub {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--fg-3);
+    margin-left: 6px;
+    bottom: 0;
+  }
+  .eg-kpi__delta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    margin-top: var(--space-2);
+    color: var(--ok);
+  }
+  .eg-kpi__delta--down { color: var(--crit); }
+  .eg-kpi__delta--flat { color: var(--fg-3); }
+
+  /* — generic dark block — */
+  .eg-block {
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    padding: var(--space-5) var(--space-6) var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+  .eg-block__head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: var(--space-4);
+  }
+  .eg-block__title {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--fs-xl);
+    letter-spacing: var(--tracking-tight);
+    color: var(--fg);
+  }
+  .eg-block__meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  /* — manuscript queue table — */
+  .eg-queue th { color: var(--fg-3); border-bottom-color: var(--fg); }
+  .eg-queue td { color: var(--fg); border-bottom-color: var(--rule); }
+  .eg-queue tr:hover td { background: var(--bg-2); }
+  .eg-queue__ms {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 500;
+    font-size: var(--fs-md);
+    color: var(--fg);
+  }
+  .eg-queue__hint {
+    display: block;
+    font-size: 11px;
+    color: var(--fg-3);
+    font-family: var(--font-mono);
+    margin-top: 2px;
+    font-style: normal;
+  }
+  .eg-queue__num { font-family: var(--font-mono); color: var(--fg-3); }
+
+  .eg-tab-count {
+    color: var(--fg-3);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    margin-left: 6px;
+  }
+
+  /* — editorial notes — */
+  .eg-notes { display: flex; flex-direction: column; }
+  .eg-note {
+    display: grid;
+    grid-template-columns: 16px 1fr auto;
+    gap: var(--space-4);
+    padding: var(--space-4) 0;
+    border-top: 1px solid var(--rule-faint);
+    align-items: baseline;
+  }
+  .eg-note:first-child { border-top: 0; }
+  .eg-note__pip { display: flex; align-items: center; height: 1.4em; }
+  .eg-note__body {
+    font-size: var(--fs-sm);
+    line-height: var(--lh-loose);
+    color: var(--fg);
+  }
+  .eg-note__body b { font-weight: 500; color: var(--fg); }
+  .eg-note__body em { font-style: italic; color: var(--fg-3); }
+  .eg-note__body code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent);
+    background: transparent;
+    padding: 0 2px;
+  }
+  .eg-note__meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* — bottom row: status palette swatch + draft form — */
+  .eg-two {
+    display: grid;
+    grid-template-columns: 1fr 1.1fr;
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+  @media (max-width: 1080px) { .eg-two { grid-template-columns: 1fr; } }
+
+  /* status palette demo — every dark-palette token in one place */
+  .eg-palette { display: flex; flex-direction: column; }
+  .eg-pal-row {
+    display: grid;
+    grid-template-columns: 16px 110px 1fr 80px;
+    gap: var(--space-4);
+    padding: 10px 0;
+    border-top: 1px solid var(--rule-faint);
+    font-size: var(--fs-sm);
+    align-items: center;
+  }
+  .eg-pal-row:first-child { border-top: 0; }
+  .eg-pal-row__sw { display: flex; align-items: center; }
+  .eg-pal-row__name {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-2);
+  }
+  .eg-pal-row__role { color: var(--fg-2); font-size: 13px; }
+  .eg-pal-row__ratio {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-3);
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* compose form — inputs on graphite */
+  .eg-form {
+    display: flex; flex-direction: column;
+    gap: var(--space-5);
+  }
+  .eg-form__row {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+  @media (max-width: 720px) { .eg-form__row { grid-template-columns: 1fr; } }
+  .eg-form__foot {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: flex-end;
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--rule);
+  }
+
+  /* ── RIGHT RAIL: agent activity ───────────────────── */
+  .eg-rail {
+    grid-area: rail;
+    background: var(--bg);
+    border-left: 1px solid var(--rule);
+    padding: var(--space-5);
+    overflow-y: auto;
+  }
+  .eg-rail__title {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--rule);
+    display: flex; justify-content: space-between;
+  }
+  .eg-rail__title b { color: var(--accent); font-weight: 400; }
+
+  .eg-agent {
+    margin-bottom: var(--space-5);
+    padding-bottom: var(--space-4);
+    border-bottom: 1px solid var(--rule-faint);
+  }
+  .eg-agent:last-child { border-bottom: 0; }
+  .eg-agent__h {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: var(--space-3);
+  }
+  .eg-agent__sigil {
+    width: 28px; height: 28px;
+    border: 1px solid var(--accent-deep);
+    color: var(--accent);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 14px;
+    display: grid; place-items: center;
+  }
+  .eg-agent__name {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-md);
+    color: var(--fg);
+    flex: 1;
+  }
+  .eg-agent__status {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--ok);
+  }
+  .eg-agent__status--idle { color: var(--fg-3); }
+  .eg-agent__task {
+    font-size: 13px;
+    color: var(--fg-2);
+    line-height: var(--lh-loose);
+    margin-bottom: var(--space-3);
+  }
+  .eg-agent__task em { font-style: italic; color: var(--fg-3); }
+
+  /* progress bar */
+  .eg-bar {
+    height: 4px;
+    background: var(--bg-3);
+    border: 1px solid var(--rule);
+    margin-bottom: var(--space-2);
+    overflow: hidden;
+  }
+  .eg-bar__fill {
+    height: 100%;
+    background: var(--accent);
+  }
+  .eg-bar__fill--copper { background: var(--copper); }
+  .eg-bar__fill--ok     { background: var(--ok); }
+
+  /* width modifiers — keep widths in CSS, not inline */
+  .w-22 { width: 22%; } .w-38 { width: 38%; } .w-54 { width: 54%; }
+  .w-64 { width: 64%; } .w-78 { width: 78%; } .w-92 { width: 92%; }
+
+  .eg-agent__bar-row {
+    display: flex; justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--fg-3);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+  }
+
+  /* mini event log at bottom of rail */
+  .eg-pulse {
+    margin-top: var(--space-5);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--rule);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--fg-3);
+  }
+  .eg-pulse__row {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    gap: var(--space-3);
+    padding: 6px 0;
+    line-height: 1.5;
+  }
+  .eg-pulse__t { color: var(--fg-4); }
+  .eg-pulse__msg { color: var(--fg-2); }
+  .eg-pulse__msg b { color: var(--fg); font-weight: 500; }
+  .eg-pulse__msg .ok { color: var(--ok); }
+  .eg-pulse__msg .warn { color: var(--warn); }
+  .eg-pulse__msg .info { color: var(--info); }
+  .eg-pulse__msg .crit { color: var(--crit); }
+</style>
+</head>
+<body>
+
+<div class="engawa">
+
+  <!-- ─── TOP BAR ────────────────────────────────────── -->
+  <header class="eg-top">
+    <div class="eg-top__brand">
+      <span class="eg-top__glyph">縁</span>
+      <span>Engawa</span>
+    </div>
+    <nav class="eg-top__crumb" aria-label="breadcrumb">
+      <span>Studio</span>
+      <span class="eg-top__sep">/</span>
+      <span>Lantern</span>
+      <span class="eg-top__sep">/</span>
+      <b>Vol I · Night Review</b>
+    </nav>
+    <div class="eg-top__spacer"></div>
+
+    <!-- session timer -->
+    <div class="eg-session" aria-label="Session timer">
+      <span class="eg-session__pulse" aria-hidden="true"></span>
+      <span class="eg-session__lbl">Session</span>
+      <span class="eg-session__t">02:14:37</span>
+    </div>
+
+    <!-- light/dark toggle — flips data-mode on <html> -->
+    <div class="eg-mode" role="group" aria-label="Surface mode">
+      <button class="eg-mode__btn" type="button" data-mode-set="light" aria-pressed="false">Light</button>
+      <button class="eg-mode__btn" type="button" data-mode-set="dark"  aria-pressed="true">Dark</button>
+    </div>
+
+    <button class="gk-cta gk-cta--ghost gk-cta--sm" type="button">
+      <span class="gk-cta__arrow">+</span> New review
+    </button>
+    <div class="eg-top__avatar" aria-label="Account">A</div>
+  </header>
+
+  <!-- ─── SIDEBAR ───────────────────────────────────── -->
+  <aside class="eg-side">
+    <div class="eg-side__group">
+      <div class="eg-side__label">— Atelier · Night</div>
+      <div class="eg-side__item eg-side__item--active">
+        <span>Manuscripts</span>
+        <span class="eg-side__count">07</span>
+      </div>
+      <div class="eg-side__item">
+        <span>Editorial notes</span>
+        <span class="eg-side__count">23</span>
+      </div>
+      <div class="eg-side__item">
+        <span>Galleys</span>
+        <span class="eg-side__count">04</span>
+      </div>
+      <div class="eg-side__item">
+        <span>Set type</span>
+        <span class="eg-side__count">02</span>
+      </div>
+    </div>
+    <div class="eg-side__group">
+      <div class="eg-side__label">— Practice</div>
+      <div class="eg-side__item"><span>Tokens</span></div>
+      <div class="eg-side__item"><span>Type</span></div>
+      <div class="eg-side__item"><span>Palette</span></div>
+      <div class="eg-side__item"><span>Method</span></div>
+    </div>
+    <div class="eg-side__group">
+      <div class="eg-side__label">— Status</div>
+      <div class="eg-side__item">
+        <span class="eg-side__row"><span class="gk-pip gk-pip--ok"></span>Ready to send</span>
+        <span class="eg-side__count">02</span>
+      </div>
+      <div class="eg-side__item">
+        <span class="eg-side__row"><span class="gk-pip gk-pip--warn"></span>Awaiting review</span>
+        <span class="eg-side__count">03</span>
+      </div>
+      <div class="eg-side__item">
+        <span class="eg-side__row"><span class="gk-pip gk-pip--crit"></span>Needs revision</span>
+        <span class="eg-side__count">01</span>
+      </div>
+      <div class="eg-side__item">
+        <span class="eg-side__row"><span class="gk-pip gk-pip--dim"></span>Resting</span>
+        <span class="eg-side__count">01</span>
+      </div>
+    </div>
+    <div class="eg-side__foot">
+      <span>Vol I</span>
+      <span>—</span>
+      <span>23:14</span>
+    </div>
+  </aside>
+
+  <!-- ─── MAIN ──────────────────────────────────────── -->
+  <main class="eg-main">
+
+    <!-- title -->
+    <header class="eg-head">
+      <div>
+        <div class="eg-head__sub">— Atelier · Night Review · Volume I</div>
+        <h1 class="eg-head__title">The studio, <em>after hours.</em></h1>
+      </div>
+      <div class="eg-head__actions">
+        <button class="gk-cta gk-cta--ghost" type="button">Filter</button>
+        <button class="gk-cta gk-cta--ghost" type="button">Export</button>
+        <button class="gk-cta" type="button">Open galley <span class="gk-cta__arrow">→</span></button>
+      </div>
+    </header>
+
+    <!-- KPI strip — every metric uses dark tokens -->
+    <section class="eg-kpis" aria-label="Session metrics">
+      <div class="eg-kpi">
+        <div class="eg-kpi__label">In review</div>
+        <div class="eg-kpi__value">07</div>
+        <div class="eg-kpi__delta">↑ 02 since dusk</div>
+      </div>
+      <div class="eg-kpi">
+        <div class="eg-kpi__label">Notes opened</div>
+        <div class="eg-kpi__value">23</div>
+        <div class="eg-kpi__delta">↑ 09 wk-on-wk</div>
+      </div>
+      <div class="eg-kpi">
+        <div class="eg-kpi__label">Awaiting reply</div>
+        <div class="eg-kpi__value">03</div>
+        <div class="eg-kpi__delta eg-kpi__delta--flat">— two from this morning</div>
+      </div>
+      <div class="eg-kpi">
+        <div class="eg-kpi__label">Time at desk</div>
+        <div class="eg-kpi__value">02<sub>hr</sub>14<sub>min</sub></div>
+        <div class="eg-kpi__delta eg-kpi__delta--down">↓ 18 min vs. last night</div>
+      </div>
+    </section>
+
+    <!-- manuscript queue -->
+    <section class="eg-block">
+      <header class="eg-block__head">
+        <h2 class="eg-block__title">Manuscript queue</h2>
+        <div class="eg-block__meta">— sorted by reading order</div>
+      </header>
+      <div class="gk-tabs">
+        <button class="gk-tab" type="button" aria-selected="true">All<span class="eg-tab-count">07</span></button>
+        <button class="gk-tab" type="button">Awaiting<span class="eg-tab-count">03</span></button>
+        <button class="gk-tab" type="button">Revised<span class="eg-tab-count">02</span></button>
+        <button class="gk-tab" type="button">Sent<span class="eg-tab-count">02</span></button>
+      </div>
+      <table class="gk-table eg-queue">
+        <thead>
+          <tr>
+            <th>№</th>
+            <th>Manuscript</th>
+            <th>Author</th>
+            <th>State</th>
+            <th class="gk-table__num">Folios</th>
+            <th class="gk-table__num">Last touch</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="eg-queue__num">01</td>
+            <td>
+              <span class="eg-queue__ms">On porches</span>
+              <span class="eg-queue__hint">— a long essay on transitional space</span>
+            </td>
+            <td>K. Hosokawa</td>
+            <td><span class="gk-badge gk-badge--ok">Ready</span></td>
+            <td class="gk-table__num">14</td>
+            <td class="gk-table__num">22:48</td>
+          </tr>
+          <tr>
+            <td class="eg-queue__num">02</td>
+            <td>
+              <span class="eg-queue__ms">The lantern's hour</span>
+              <span class="eg-queue__hint">— on attention after dark</span>
+            </td>
+            <td>M. Kawakami</td>
+            <td><span class="gk-badge gk-badge--warn">Awaiting</span></td>
+            <td class="gk-table__num">09</td>
+            <td class="gk-table__num">22:21</td>
+          </tr>
+          <tr>
+            <td class="eg-queue__num">03</td>
+            <td>
+              <span class="eg-queue__ms">Cabinet, mended</span>
+              <span class="eg-queue__hint">— a workshop note on joinery</span>
+            </td>
+            <td>R. Underwood</td>
+            <td><span class="gk-badge gk-badge--accent">Revising</span></td>
+            <td class="gk-table__num">06</td>
+            <td class="gk-table__num">21:52</td>
+          </tr>
+          <tr>
+            <td class="eg-queue__num">04</td>
+            <td>
+              <span class="eg-queue__ms">A small defense of finishing</span>
+              <span class="eg-queue__hint">— an interview, edited</span>
+            </td>
+            <td>S. Ueno</td>
+            <td><span class="gk-badge gk-badge--warn">Awaiting</span></td>
+            <td class="gk-table__num">11</td>
+            <td class="gk-table__num">20:14</td>
+          </tr>
+          <tr>
+            <td class="eg-queue__num">05</td>
+            <td>
+              <span class="eg-queue__ms">Notes from a late field</span>
+              <span class="eg-queue__hint">— short pieces, sequenced</span>
+            </td>
+            <td>T. Berger</td>
+            <td><span class="gk-badge">Resting</span></td>
+            <td class="gk-table__num">23</td>
+            <td class="gk-table__num">Yesterday</td>
+          </tr>
+          <tr>
+            <td class="eg-queue__num">06</td>
+            <td>
+              <span class="eg-queue__ms">The grain of the page</span>
+              <span class="eg-queue__hint">— a craft essay</span>
+            </td>
+            <td>A. Soseki</td>
+            <td><span class="gk-badge gk-badge--ok">Sent</span></td>
+            <td class="gk-table__num">07</td>
+            <td class="gk-table__num">19:02</td>
+          </tr>
+          <tr>
+            <td class="eg-queue__num">07</td>
+            <td>
+              <span class="eg-queue__ms">Concerning thresholds</span>
+              <span class="eg-queue__hint">— a colophon for the volume</span>
+            </td>
+            <td>You</td>
+            <td><span class="gk-badge gk-badge--warn">Awaiting</span></td>
+            <td class="gk-table__num">02</td>
+            <td class="gk-table__num">just now</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- editorial notes — a real prose object on graphite -->
+    <section class="eg-block">
+      <header class="eg-block__head">
+        <h2 class="eg-block__title">Editorial notes</h2>
+        <div class="eg-block__meta">— folio 03 · "On porches"</div>
+      </header>
+      <div class="eg-notes">
+        <div class="eg-note">
+          <span class="eg-note__pip"><span class="gk-pip"></span></span>
+          <span class="eg-note__body">
+            <b>Folio 03, ¶ 2.</b> The phrase <em>"a small ceremony"</em> is doing two jobs — opening the section and closing the previous one. Cut it from one place. Suggest keeping it as the closer; the opener can be the harder line.
+          </span>
+          <span class="eg-note__meta">22:48 · You</span>
+        </div>
+        <div class="eg-note">
+          <span class="eg-note__pip"><span class="gk-pip gk-pip--warn"></span></span>
+          <span class="eg-note__body">
+            <b>Folio 04.</b> The pull quote <em>"the engawa is not a place; it is a habit"</em> reads better at the volume opener than mid-essay. <code>--accent-deep</code> on the cite is correct; type ramp holds.
+          </span>
+          <span class="eg-note__meta">22:31 · Hosokawa</span>
+        </div>
+        <div class="eg-note">
+          <span class="eg-note__pip"><span class="gk-pip gk-pip--crit"></span></span>
+          <span class="eg-note__body">
+            <b>Folio 06.</b> Footnote [3] cites a date that doesn't appear in the bibliography. <em>Author owes us a source by Friday or we cut the line.</em>
+          </span>
+          <span class="eg-note__meta">22:11 · Ward</span>
+        </div>
+        <div class="eg-note">
+          <span class="eg-note__pip"><span class="gk-pip gk-pip--ok"></span></span>
+          <span class="eg-note__body">
+            <b>Folio 09.</b> Final paragraph runs long but earns its length. Holding the comma at <em>"and that, perhaps, is enough"</em> on copy review.
+          </span>
+          <span class="eg-note__meta">21:54 · You</span>
+        </div>
+        <div class="eg-note">
+          <span class="eg-note__pip"><span class="gk-pip gk-pip--dim"></span></span>
+          <span class="eg-note__body">
+            <b>Cover.</b> Champagne sigil at AAA against graphite — passes. Copper subtitle at AA — passes for short runs only. <em>Approved.</em>
+          </span>
+          <span class="eg-note__meta">21:18 · Gate</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- two-up: dark palette demo + compose form -->
+    <section class="eg-two">
+
+      <div class="eg-block">
+        <header class="eg-block__head">
+          <h2 class="eg-block__title">Status palette</h2>
+          <div class="eg-block__meta">— against graphite</div>
+        </header>
+        <div class="eg-palette">
+          <div class="eg-pal-row">
+            <span class="eg-pal-row__sw"><span class="gk-pip"></span></span>
+            <span class="eg-pal-row__name">--accent</span>
+            <span class="eg-pal-row__role">champagne · large UI accents</span>
+            <span class="eg-pal-row__ratio">8.4 : 1 · AAA</span>
+          </div>
+          <div class="eg-pal-row">
+            <span class="eg-pal-row__sw"><span class="gk-pip gk-pip--ok"></span></span>
+            <span class="eg-pal-row__name">--ok</span>
+            <span class="eg-pal-row__role">sage · ready · go signals</span>
+            <span class="eg-pal-row__ratio">5.7 : 1 · AA</span>
+          </div>
+          <div class="eg-pal-row">
+            <span class="eg-pal-row__sw"><span class="gk-pip gk-pip--warn"></span></span>
+            <span class="eg-pal-row__name">--warn</span>
+            <span class="eg-pal-row__role">champagne · awaiting attention</span>
+            <span class="eg-pal-row__ratio">8.4 : 1 · AAA</span>
+          </div>
+          <div class="eg-pal-row">
+            <span class="eg-pal-row__sw"><span class="gk-pip gk-pip--crit"></span></span>
+            <span class="eg-pal-row__name">--crit</span>
+            <span class="eg-pal-row__role">copper · needs revision (small)</span>
+            <span class="eg-pal-row__ratio">5.3 : 1 · AA</span>
+          </div>
+          <div class="eg-pal-row">
+            <span class="eg-pal-row__sw"><span class="gk-pip gk-pip--dim"></span></span>
+            <span class="eg-pal-row__name">--bone-4</span>
+            <span class="eg-pal-row__role">resting · decorative only</span>
+            <span class="eg-pal-row__ratio">2.0 : 1 · ornament</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="eg-block">
+        <header class="eg-block__head">
+          <h2 class="eg-block__title">Compose a note</h2>
+          <div class="eg-block__meta">— for the manuscript</div>
+        </header>
+        <form class="eg-form" onsubmit="event.preventDefault();">
+          <div class="gk-field">
+            <label class="gk-field__label" for="eg-folio">Folio reference</label>
+            <input class="gk-input" id="eg-folio" type="text" value="03 · ¶ 2" placeholder="e.g. 04 · footnote [2]">
+            <span class="gk-field__hint">Mythic shorthand — folio, paragraph, line.</span>
+          </div>
+          <div class="eg-form__row">
+            <div class="gk-field">
+              <label class="gk-field__label" for="eg-state">State</label>
+              <select class="gk-select" id="eg-state">
+                <option>Suggestion</option>
+                <option selected>Awaiting reply</option>
+                <option>Required edit</option>
+                <option>Approved</option>
+              </select>
+            </div>
+            <div class="gk-field">
+              <label class="gk-field__label" for="eg-rec">Recipient</label>
+              <select class="gk-select" id="eg-rec">
+                <option>Author</option>
+                <option selected>Co-editor · Ward</option>
+                <option>Reader · Gate</option>
+              </select>
+            </div>
+          </div>
+          <div class="gk-field">
+            <label class="gk-field__label" for="eg-body">Note</label>
+            <textarea class="gk-textarea" id="eg-body" placeholder="What does the page need from us tonight?">The phrase carries weight; protect it. Trim the surrounding sentence by one clause and the cadence will hold.</textarea>
+          </div>
+          <div class="eg-form__foot">
+            <button class="gk-cta gk-cta--ghost" type="button">Save as draft</button>
+            <button class="gk-cta" type="submit">Send <span class="gk-cta__arrow">→</span></button>
+          </div>
+        </form>
+      </div>
+
+    </section>
+
+    <!-- empty state demo -->
+    <section class="eg-block">
+      <div class="gk-empty">
+        <div class="gk-empty__title">A quiet veranda.</div>
+        <p class="gk-empty__body">No correspondence from the cabinet at this hour. The studio bell will ring when a reader writes — until then, the desk is yours.</p>
+        <button class="gk-cta gk-cta--ghost" type="button">Open the cabinet →</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ─── RIGHT RAIL: agent activity ─────────────────── -->
+  <aside class="eg-rail" aria-label="Agent activity">
+    <div class="eg-rail__title">
+      <span>— Agents at work</span>
+      <b>03 active</b>
+    </div>
+
+    <div class="eg-agent">
+      <div class="eg-agent__h">
+        <div class="eg-agent__sigil">G</div>
+        <div class="eg-agent__name">Gate</div>
+        <div class="eg-agent__status">Reading</div>
+      </div>
+      <p class="eg-agent__task">Cross-checking footnotes against the bibliography for <em>"On porches"</em>.</p>
+      <div class="eg-bar"><div class="eg-bar__fill w-78"></div></div>
+      <div class="eg-agent__bar-row"><span>Folio 12 / 14</span><span>78%</span></div>
+    </div>
+
+    <div class="eg-agent">
+      <div class="eg-agent__h">
+        <div class="eg-agent__sigil">W</div>
+        <div class="eg-agent__name">Ward</div>
+        <div class="eg-agent__status">Marking</div>
+      </div>
+      <p class="eg-agent__task">Marking copy edits on <em>"Cabinet, mended"</em> — joinery vocabulary needs a glossary pass.</p>
+      <div class="eg-bar"><div class="eg-bar__fill eg-bar__fill--copper w-38"></div></div>
+      <div class="eg-agent__bar-row"><span>Folio 04 / 06</span><span>38%</span></div>
+    </div>
+
+    <div class="eg-agent">
+      <div class="eg-agent__h">
+        <div class="eg-agent__sigil">L</div>
+        <div class="eg-agent__name">Lantern</div>
+        <div class="eg-agent__status">Setting</div>
+      </div>
+      <p class="eg-agent__task">Setting type for the volume's masthead — testing Cormorant against EB Garamond on display sizes.</p>
+      <div class="eg-bar"><div class="eg-bar__fill eg-bar__fill--ok w-92"></div></div>
+      <div class="eg-agent__bar-row"><span>Trial 11 / 12</span><span>92%</span></div>
+    </div>
+
+    <div class="eg-agent">
+      <div class="eg-agent__h">
+        <div class="eg-agent__sigil">S</div>
+        <div class="eg-agent__name">Sumi</div>
+        <div class="eg-agent__status eg-agent__status--idle">Resting</div>
+      </div>
+      <p class="eg-agent__task">No tasks queued. <em>Waiting for the next manuscript to arrive at the threshold.</em></p>
+    </div>
+
+    <div class="eg-pulse" aria-label="Recent activity">
+      <div class="eg-pulse__row">
+        <span class="eg-pulse__t">23:14</span>
+        <span class="eg-pulse__msg"><b>Gate</b> flagged <span class="warn">awaiting</span> on folio 04 · "On porches".</span>
+      </div>
+      <div class="eg-pulse__row">
+        <span class="eg-pulse__t">23:08</span>
+        <span class="eg-pulse__msg"><b>Lantern</b> finished trial 10. Type holds at 88pt; <span class="info">advised</span> 92.</span>
+      </div>
+      <div class="eg-pulse__row">
+        <span class="eg-pulse__t">22:54</span>
+        <span class="eg-pulse__msg"><b>Ward</b> opened a <span class="crit">required edit</span> on folio 06 · footnote [3].</span>
+      </div>
+      <div class="eg-pulse__row">
+        <span class="eg-pulse__t">22:40</span>
+        <span class="eg-pulse__msg"><b>Gate</b> approved the cover at <span class="ok">AAA</span> against graphite.</span>
+      </div>
+      <div class="eg-pulse__row">
+        <span class="eg-pulse__t">22:18</span>
+        <span class="eg-pulse__msg">Session opened. <em>The studio takes its evening posture.</em></span>
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<!-- ──────────────────────────────────────────────────
+     LIGHT / DARK TOGGLE
+     Canonical implementation. Future agents copy this.
+     Flips data-mode on <html>:
+       absent  → light variant (genkan default)
+       "dark"  → dark variant
+     Persists via sessionStorage so a refresh holds.
+     ────────────────────────────────────────────────── -->
+<script>
+  (function () {
+    var html = document.documentElement;
+    var btns = document.querySelectorAll('[data-mode-set]');
+
+    function apply(mode) {
+      if (mode === 'dark') html.setAttribute('data-mode', 'dark');
+      else                 html.removeAttribute('data-mode');
+      btns.forEach(function (b) {
+        b.setAttribute('aria-pressed', b.dataset.modeSet === mode ? 'true' : 'false');
+      });
+      try { sessionStorage.setItem('engawa.mode', mode); } catch (e) {}
+    }
+
+    // restore from session, fall back to current attribute
+    var saved = null;
+    try { saved = sessionStorage.getItem('engawa.mode'); } catch (e) {}
+    var initial = saved || (html.getAttribute('data-mode') === 'dark' ? 'dark' : 'light');
+    apply(initial);
+
+    btns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        apply(b.dataset.modeSet);
+      });
+    });
+  }());
+</script>
+
+</body>
+</html>

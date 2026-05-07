@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="en" class="cockpit">
+<head>
+<meta charset="utf-8">
+<title>Watch — Cockpit Report Template</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="base.css">
+<style>
+  body { background: var(--graphite); color: var(--bone); font-family: var(--font-mono); font-size: 13px; line-height: 1.65; }
+
+  .watch { max-width: 920px; margin: 0 auto; padding: 48px 32px; }
+
+  /* — Header — */
+  .watch__head {
+    border-top: 2px solid var(--champagne);
+    border-bottom: 1px solid var(--rule);
+    padding: 20px 0;
+    margin-bottom: 32px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: end;
+    gap: 24px;
+  }
+  .watch__brand {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--bone);
+  }
+  .watch__brand .glyph {
+    width: 12px; height: 12px;
+    border: 1px solid var(--champagne);
+    position: relative;
+  }
+  .watch__brand .glyph::after {
+    content: ""; position: absolute; inset: 2px;
+    background: var(--champagne);
+  }
+  .watch__title {
+    font-family: var(--font-body);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--bone);
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .watch__title .ident {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--champagne);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 400;
+  }
+  .watch__meta {
+    text-align: right;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--bone-3);
+    line-height: 1.7;
+  }
+  .watch__meta strong { color: var(--bone); font-weight: 400; }
+
+  /* — Section — */
+  .sec { margin: 32px 0; }
+  .sec__h {
+    display: flex; align-items: center; gap: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 16px;
+  }
+  .sec__num {
+    font-size: 10px; color: var(--champagne);
+    letter-spacing: 0.14em;
+    font-variant-numeric: tabular-nums;
+  }
+  .sec__t {
+    font-family: var(--font-body);
+    font-size: 14px; font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--bone);
+  }
+  .sec__sig {
+    margin-left: auto;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--bone-3);
+  }
+  .sec__sig.ok   { color: var(--ok); }
+  .sec__sig.warn { color: var(--warn); }
+  .sec__sig.crit { color: var(--crit); }
+
+  /* — Body prose (mono) — */
+  .sec p { color: var(--bone-2); margin-bottom: 12px; max-width: 70ch; }
+  .sec p strong { color: var(--bone); font-weight: 500; }
+  .sec p .acc { color: var(--champagne); }
+
+  /* — Definition list — */
+  .dl {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 6px 24px;
+    margin: 12px 0;
+    padding: 14px 16px;
+    background: var(--graphite-2);
+    border: 1px solid var(--rule);
+  }
+  .dl dt {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--bone-3);
+    padding-top: 1px;
+  }
+  .dl dd { color: var(--bone); font-variant-numeric: tabular-nums; }
+  .dl dd .pip {
+    display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; margin-right: 8px; vertical-align: 1px;
+  }
+  .dl dd .pip.ok { background: var(--ok); }
+  .dl dd .pip.warn { background: var(--warn); }
+  .dl dd .pip.crit { background: var(--crit); }
+
+  /* — Findings table — */
+  .findings {
+    width: 100%; border-collapse: collapse;
+    font-size: 12px;
+    margin: 8px 0;
+  }
+  .findings th {
+    text-align: left;
+    padding: 8px 12px;
+    font-weight: 400;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--bone-3);
+    border-bottom: 1px solid var(--rule);
+  }
+  .findings td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--rule-faint);
+    color: var(--bone-2);
+    vertical-align: top;
+  }
+  .findings .id {
+    color: var(--champagne);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .findings .sev {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .findings .sev.high { color: var(--crit); }
+  .findings .sev.med  { color: var(--warn); }
+  .findings .sev.low  { color: var(--ok); }
+  .findings .what { color: var(--bone); }
+
+  /* — Code / shell — */
+  pre.shell {
+    background: #0A0C0E;
+    border: 1px solid var(--rule);
+    border-left: 2px solid var(--champagne);
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: 12px;
+    color: var(--bone-2);
+    overflow-x: auto;
+    line-height: 1.7;
+  }
+  pre.shell .prompt { color: var(--champagne); user-select: none; }
+  pre.shell .cmt { color: var(--bone-3); font-style: italic; }
+  pre.shell .ok  { color: var(--ok); }
+  pre.shell .warn { color: var(--warn); }
+  pre.shell .crit { color: var(--crit); }
+
+  /* — Disposition strip — */
+  .dispo {
+    margin: 32px 0;
+    padding: 16px 20px;
+    border: 1px solid var(--champagne);
+    background: linear-gradient(to right, rgba(201, 168, 120, 0.04), transparent 60%);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 24px;
+    align-items: center;
+  }
+  .dispo__lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--champagne);
+  }
+  .dispo__msg {
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--bone);
+  }
+  .dispo__by {
+    font-size: 10px;
+    color: var(--bone-3);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .dispo__by strong { color: var(--bone); font-weight: 400; }
+
+  /* — Sigil / sign-off — */
+  .sigil {
+    margin-top: 48px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    font-size: 11px;
+    color: var(--bone-3);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+  }
+  .sigil__name { color: var(--bone); font-family: var(--font-body); font-style: italic; font-size: 16px; text-transform: none; letter-spacing: -0.01em; }
+
+  /* — Footer — */
+  .watch__foot {
+    margin-top: 48px;
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--bone-4);
+  }
+</style>
+</head>
+<body>
+
+<article class="watch">
+
+  <!-- Header -->
+  <header class="watch__head">
+    <div class="watch__brand">
+      <span class="glyph"></span>
+      <span><strong>WATCH</strong></span>
+    </div>
+    <h1 class="watch__title">
+      <span class="ident">Report · WR-2026-0430-0142</span>
+      Postern incident — arbiter loss, sentinel-04-c1
+    </h1>
+    <div class="watch__meta">
+      <div><strong>Classification</strong> internal · ops</div>
+      <div><strong>Issued</strong> 30 apr 2026 · 17:48 utc</div>
+      <div><strong>Status</strong> contained · monitoring</div>
+    </div>
+  </header>
+
+  <!-- Disposition -->
+  <div class="dispo">
+    <span class="dispo__lbl">disposition</span>
+    <span class="dispo__msg">Contained at 17:43:11 UTC. No customer-visible impact. Root cause identified, replacement arbiter promoted. Monitoring continues for 24h.</span>
+    <span class="dispo__by"><strong>signed</strong> on-call · gate</span>
+  </div>
+
+  <!-- Section 01 -->
+  <section class="sec">
+    <div class="sec__h">
+      <span class="sec__num">— 01</span>
+      <span class="sec__t">Summary</span>
+      <span class="sec__sig ok">resolved</span>
+    </div>
+    <p>
+      At <strong>17:41:58 UTC</strong>, arbiter node <span class="acc">sentinel-04-c1</span> stopped reporting heartbeats to the cluster coordinator. The cluster degraded to a two-arbiter quorum, which remained valid; no write path was interrupted. Auto-failover promoted the standby arbiter <span class="acc">sentinel-04-d1</span> at <strong>17:43:11 UTC</strong>, restoring full quorum. Total time to restoration: <strong>1m 13s</strong>. Total customer-visible impact: <strong>none</strong>.
+    </p>
+
+    <dl class="dl">
+      <dt>severity</dt>     <dd><span class="pip warn"></span>SEV-3 · degraded redundancy, no impact</dd>
+      <dt>detected</dt>     <dd>17:41:58 utc · automated · paging route postern.arbiter</dd>
+      <dt>contained</dt>    <dd>17:43:11 utc · automated · standby promotion</dd>
+      <dt>operator ack</dt>  <dd>17:43:47 utc · on-call · gate (you)</dd>
+      <dt>customer impact</dt><dd><span class="pip ok"></span>nil</dd>
+      <dt>budget consumed</dt><dd>0.4% of monthly error budget · 94% remains</dd>
+    </dl>
+  </section>
+
+  <!-- Section 02 -->
+  <section class="sec">
+    <div class="sec__h">
+      <span class="sec__num">— 02</span>
+      <span class="sec__t">Findings</span>
+      <span class="sec__sig warn">3 to address</span>
+    </div>
+    <p>
+      Three contributing factors were identified during the post-incident review at <span class="acc">17:46 UTC</span>. None are independently sufficient to cause an outage; their combination explains the 1m 13s detection-to-containment window.
+    </p>
+    <table class="findings">
+      <thead>
+        <tr><th>ID</th><th>Severity</th><th>Finding</th><th>Owner</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="id">F-01</td>
+          <td><span class="sev high">high</span></td>
+          <td class="what">Heartbeat interval (5s) is too long for the new arbiter SLO. Reduce to 2s; current value pre-dates the SLO change in <span class="acc">RFC-038</span>.</td>
+          <td>infra · gate</td>
+        </tr>
+        <tr>
+          <td class="id">F-02</td>
+          <td><span class="sev med">med</span></td>
+          <td class="what">Standby promotion runbook lists manual confirmation step that automation already performs. Drift from <span class="acc">runbook-arb-04</span>.</td>
+          <td>infra · ward</td>
+        </tr>
+        <tr>
+          <td class="id">F-03</td>
+          <td><span class="sev low">low</span></td>
+          <td class="what">Pager template did not include cluster identifier in subject line. Adds 8–12s to operator orientation.</td>
+          <td>ops · matins</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Section 03 -->
+  <section class="sec">
+    <div class="sec__h">
+      <span class="sec__num">— 03</span>
+      <span class="sec__t">Reproduction</span>
+      <span class="sec__sig">verified</span>
+    </div>
+    <p>
+      The fault was reproduced in <span class="acc">stage-iad</span> at <strong>17:55 UTC</strong> by isolating the arbiter VM at the hypervisor level. Detection-to-containment timing matched production within 4s; the fix proposed below brought the window to <strong>11s</strong>.
+    </p>
+<pre class="shell"><span class="prompt">$</span> watchctl drill arbiter-loss --target sentinel-04-c1 --env stage
+<span class="cmt"># drill scheduled · 17:55:02 utc</span>
+<span class="cmt"># isolating sentinel-04-c1 at hypervisor</span>
+<span class="ok">[ok]</span>    quorum maintained         · 2/3 arbiters
+<span class="warn">[warn]</span>  heartbeat timeout         · 17:55:07 (5.2s)
+<span class="ok">[ok]</span>    standby promotion        · 17:55:13 (6.1s)
+<span class="ok">[ok]</span>    cluster nominal          · 17:55:13 · total 11s
+
+<span class="prompt">$</span> watchctl drill verify --runbook runbook-arb-04
+<span class="ok">[ok]</span>    runbook synthesized      · automation matches expected steps
+<span class="cmt"># exit 0</span></pre>
+  </section>
+
+  <!-- Section 04 -->
+  <section class="sec">
+    <div class="sec__h">
+      <span class="sec__num">— 04</span>
+      <span class="sec__t">Action items</span>
+      <span class="sec__sig">3 open · 0 closed</span>
+    </div>
+    <table class="findings">
+      <thead><tr><th>ID</th><th>Action</th><th>Owner</th><th>Due</th></tr></thead>
+      <tbody>
+        <tr><td class="id">A-01</td><td class="what">Reduce arbiter heartbeat to 2s; ship behind feature flag <span class="acc">arb-hb-2s</span></td><td>infra · gate</td><td>02 may</td></tr>
+        <tr><td class="id">A-02</td><td class="what">Reconcile <span class="acc">runbook-arb-04</span> with current automation; remove manual step</td><td>infra · ward</td><td>05 may</td></tr>
+        <tr><td class="id">A-03</td><td class="what">Update pager template to include cluster identifier in subject</td><td>ops · matins</td><td>03 may</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Sign-off -->
+  <div class="sigil">
+    <div>
+      <div class="sigil__name">Gate</div>
+      <div style="margin-top: 4px;">on-call · primary · 17:43:47 ack</div>
+    </div>
+    <div style="text-align: right;">
+      <div class="sigil__name">Ward</div>
+      <div style="margin-top: 4px;">reviewer · approved 17:48</div>
+    </div>
+  </div>
+
+  <footer class="watch__foot">
+    <span>Watch · Cockpit Register · v1</span>
+    <span>WR-2026-0430-0142</span>
+    <span>1 of 1 · contained</span>
+  </footer>
+
+</article>
+
+</body>
+</html>

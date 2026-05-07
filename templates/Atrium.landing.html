@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en" data-register="genkan">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Atrium — Personal Template System</title>
+<link rel="stylesheet" href="genkan.css">
+<style>
+  /* page-specific compositions only — primitives live in genkan.css */
+  .atrium-hero-mark {
+    aspect-ratio: 4 / 5;
+    background:
+      linear-gradient(180deg, transparent 0%, transparent 70%, rgba(26,23,20,0.08) 100%),
+      var(--kozo);
+    border: 1px solid var(--rule);
+    position: relative;
+    overflow: hidden;
+  }
+  .atrium-hero-mark::before {
+    content: "";
+    position: absolute; inset: 8% 14% 18% 14%;
+    border: 1px solid var(--rule);
+  }
+  .atrium-hero-mark__seal {
+    position: absolute; left: 50%; top: 38%;
+    transform: translate(-50%, -50%);
+    width: 168px; height: 168px;
+    border: 1px solid var(--accent-deep);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 80px;
+    color: var(--accent-deep);
+  }
+  .atrium-hero-mark__caption {
+    position: absolute; left: 14%; right: 14%; bottom: 8%;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+    display: flex; justify-content: space-between;
+    padding-top: 10px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .atrium-three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-7); }
+  .atrium-two   { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-7); }
+  @media (max-width: 880px) {
+    .atrium-three, .atrium-two { grid-template-columns: 1fr; }
+  }
+
+  .atrium-craft {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: var(--space-9);
+    align-items: center;
+  }
+  .atrium-craft__plate {
+    aspect-ratio: 1 / 1;
+    background: var(--bg);
+    border: 1px solid var(--rule);
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .atrium-craft__plate::before,
+  .atrium-craft__plate::after {
+    content: "";
+    position: absolute;
+    background: var(--accent);
+  }
+  .atrium-craft__plate::before { left: 0; right: 0; top: 50%; height: 1px; }
+  .atrium-craft__plate::after  { top: 0; bottom: 0; left: 50%; width: 1px; }
+  .atrium-craft__plate-mark {
+    position: relative; z-index: 1;
+    background: var(--bg); padding: var(--space-3) var(--space-4);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: var(--fs-3xl);
+    color: var(--fg);
+  }
+  @media (max-width: 880px) {
+    .atrium-craft { grid-template-columns: 1fr; }
+  }
+
+  .atrium-pricing {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    border: 1px solid var(--rule);
+  }
+  .atrium-tier { padding: var(--space-7) var(--space-6); border-right: 1px solid var(--rule); position: relative; }
+  .atrium-tier:last-child { border-right: 0; }
+  .atrium-tier--accent { background: var(--bone-2); }
+  .atrium-tier__name {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    margin-bottom: var(--space-5);
+  }
+  .atrium-tier__price {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 64px;
+    line-height: 1;
+    letter-spacing: var(--tracking-tight);
+    color: var(--fg);
+  }
+  .atrium-tier__price small {
+    font-family: var(--font-body);
+    font-size: var(--fs-sm);
+    font-weight: 400;
+    color: var(--fg-3);
+    margin-left: var(--space-2);
+  }
+  .atrium-tier__line {
+    margin-top: var(--space-6);
+    padding-top: var(--space-3);
+    border-top: 1px solid var(--rule);
+    font-size: var(--fs-sm);
+    color: var(--fg-2);
+    line-height: var(--lh-loose);
+  }
+  .atrium-tier__list {
+    margin: var(--space-5) 0;
+    display: flex; flex-direction: column; gap: var(--space-2);
+  }
+  .atrium-tier__list li {
+    font-size: var(--fs-sm);
+    color: var(--fg-2);
+    padding-left: var(--space-4);
+    position: relative;
+  }
+  .atrium-tier__list li::before {
+    content: "·";
+    position: absolute; left: 0; top: -2px;
+    color: var(--accent);
+    font-size: var(--fs-md);
+  }
+  @media (max-width: 880px) {
+    .atrium-pricing { grid-template-columns: 1fr; }
+    .atrium-tier { border-right: 0; border-bottom: 1px solid var(--rule); }
+    .atrium-tier:last-child { border-bottom: 0; }
+  }
+
+  .atrium-quote {
+    border-top: 1px solid var(--fg);
+    border-bottom: 1px solid var(--fg);
+    padding: var(--space-8) 0;
+    text-align: center;
+  }
+  .atrium-quote__body {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 1.25;
+    color: var(--fg);
+    max-width: 26ch;
+    margin: 0 auto;
+    letter-spacing: var(--tracking-tight);
+  }
+  .atrium-quote__cite {
+    margin-top: var(--space-6);
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    text-transform: uppercase;
+    color: var(--fg-3);
+  }
+
+  .atrium-faq__row {
+    border-top: 1px solid var(--rule);
+    padding: var(--space-5) 0;
+    display: grid;
+    grid-template-columns: 80px 1fr 1.4fr;
+    gap: var(--space-6);
+    align-items: baseline;
+  }
+  .atrium-faq__row:last-child { border-bottom: 1px solid var(--rule); }
+  .atrium-faq__num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-caps);
+    color: var(--accent);
+  }
+  .atrium-faq__q {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: var(--fs-lg);
+    line-height: var(--lh-snug);
+    color: var(--fg);
+  }
+  .atrium-faq__a {
+    font-size: var(--fs-sm);
+    line-height: var(--lh-loose);
+    color: var(--fg-2);
+  }
+  @media (max-width: 880px) {
+    .atrium-faq__row { grid-template-columns: 1fr; gap: var(--space-2); }
+  }
+</style>
+</head>
+<body>
+<div class="gk-shell">
+
+  <!-- ── NAV ───────────────────────────────────────────── -->
+  <header class="gk-nav">
+    <div class="gk-container gk-nav__inner">
+      <a href="#" class="gk-nav__brand">
+        <span class="glyph">門</span>
+        <span>Atrium</span>
+      </a>
+      <nav class="gk-nav__menu">
+        <a class="gk-nav__link" href="#craft">Craft</a>
+        <a class="gk-nav__link" href="#pieces">Pieces</a>
+        <a class="gk-nav__link" href="#pricing">Pricing</a>
+        <a class="gk-nav__link" href="#words" aria-current="page">Words</a>
+        <a class="gk-cta gk-cta--ghost gk-cta--sm" href="#enter">
+          Enter <span class="gk-cta__arrow">→</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ── HERO ───────────────────────────────────────── -->
+    <section class="gk-hero">
+      <div class="gk-container gk-hero__inner">
+        <div>
+          <div class="gk-hero__eyebrow">— Established 2026 · Volume 1</div>
+          <h1 class="gk-hero__title">
+            A house for<br>
+            <em>considered</em> work.
+          </h1>
+          <p class="gk-hero__lede">
+            Atrium is the entryway between the rough draft and the finished thing — a small atelier of templates, tools, and disciplines for people who care how their work looks before they show it to anyone.
+          </p>
+          <div class="gk-hero__actions">
+            <a class="gk-cta" href="#pieces">
+              Browse the catalogue
+              <span class="gk-cta__arrow">→</span>
+            </a>
+            <a class="gk-cta gk-cta--ghost" href="#craft">Read the manifesto</a>
+          </div>
+        </div>
+        <aside class="gk-hero__meta">
+          <div class="atrium-hero-mark" aria-hidden="true">
+            <div class="atrium-hero-mark__seal">A</div>
+            <div class="atrium-hero-mark__caption">
+              <span>Plate § 01</span>
+              <span>Vol I</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ── CRAFT ──────────────────────────────────────── -->
+    <section class="gk-section" id="craft">
+      <div class="gk-container">
+        <header class="gk-section__head">
+          <div>
+            <div class="gk-section__num">§ 01 · Craft</div>
+            <h2 class="gk-section__title">A practice, <em>not a template gallery.</em></h2>
+          </div>
+          <p class="gk-section__subtitle">
+            Every piece in the Atrium catalogue starts from the same vocabulary — three faces of type, a sumi-on-bone palette, two metals used like gold leaf. The discipline is in restraint: one hundred no's for every yes.
+          </p>
+        </header>
+
+        <div class="atrium-three">
+          <article class="gk-feature">
+            <div class="gk-feature__num">— 01</div>
+            <h3 class="gk-feature__title">Two registers, one vocabulary</h3>
+            <p class="gk-feature__body">
+              Soul for things that face outward; cockpit for things you watch. They share the type stack and the metals so the brand reads consistently across both.
+            </p>
+          </article>
+          <article class="gk-feature">
+            <div class="gk-feature__num">— 02</div>
+            <h3 class="gk-feature__title">Density when it's earned</h3>
+            <p class="gk-feature__body">
+              Long-form documents are dense because the reader signed up for that. Decks are sparse because the eye is moving. The page knows what kind of room it is.
+            </p>
+          </article>
+          <article class="gk-feature">
+            <div class="gk-feature__num">— 03</div>
+            <h3 class="gk-feature__title">Tokens before pages</h3>
+            <p class="gk-feature__body">
+              Every artifact reads from a single tokens file. Retune the system on a Tuesday and every memo, deck, dashboard, and report re-tunes with it.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── PIECES (catalogue) ─────────────────────────── -->
+    <section class="gk-section gk-section--bleed-2" id="pieces">
+      <div class="gk-container">
+        <header class="gk-section__head">
+          <div>
+            <div class="gk-section__num">§ 02 · Pieces</div>
+            <h2 class="gk-section__title">The opening <em>catalogue.</em></h2>
+          </div>
+          <p class="gk-section__subtitle">
+            Eight templates across two registers. Open one, replace the words, ship the artifact. The decisions about font and color and spacing were made on a Tuesday months ago, and they are fine.
+          </p>
+        </header>
+
+        <div class="atrium-three">
+          <article class="gk-card">
+            <div class="gk-card__num">SOUL · 01</div>
+            <h3 class="gk-card__title">Threshold</h3>
+            <p class="gk-card__body">A 12-plate slide deck. The bow you make to the audience before you speak. Cormorant display, sumi on bone, copper for moments of rest.</p>
+            <div class="gk-card__foot"><span>Deck</span><span>—</span></div>
+          </article>
+          <article class="gk-card">
+            <div class="gk-card__num">SOUL · 02</div>
+            <h3 class="gk-card__title">Hearth</h3>
+            <p class="gk-card__body">Long-form essay layout with a marginalia column for asides, footnotes, and the small pieces of evidence that make a paragraph trustworthy.</p>
+            <div class="gk-card__foot"><span>Document</span><span>—</span></div>
+          </article>
+          <article class="gk-card">
+            <div class="gk-card__num">SOUL · 03</div>
+            <h3 class="gk-card__title">Folio</h3>
+            <p class="gk-card__body">A one-page memo — masthead, two columns, colophon. For when you have something to say and the dignity of the page is part of the argument.</p>
+            <div class="gk-card__foot"><span>Memo</span><span>—</span></div>
+          </article>
+
+          <article class="gk-card">
+            <div class="gk-card__num">GENKAN · 01</div>
+            <h3 class="gk-card__title">Atrium</h3>
+            <p class="gk-card__body">This page. A marketing landing in the soul-on-software register: warm metals, hairlines, sharp corners, and product UI that doesn't feel like a SaaS dashboard.</p>
+            <div class="gk-card__foot"><span>Landing</span><span>—</span></div>
+          </article>
+          <article class="gk-card">
+            <div class="gk-card__num">GENKAN · 02</div>
+            <h3 class="gk-card__title">Vellum</h3>
+            <p class="gk-card__body">In-product application shell. Sidebar nav, tabbed workspace, dense data tables, badges, form fields, empty states. The genkan vocabulary applied to the inside of an app.</p>
+            <div class="gk-card__foot"><span>App shell</span><span>—</span></div>
+          </article>
+          <article class="gk-card">
+            <div class="gk-card__num">COCKPIT · 01–03</div>
+            <h3 class="gk-card__title">Bastion · Watch · Rampart</h3>
+            <p class="gk-card__body">Dashboard, incident report, mission control. Graphite surfaces, restrained metallics, mono-forward type. For things you watch rather than read.</p>
+            <div class="gk-card__foot"><span>Three pieces</span><span>—</span></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── DETAIL / The cross ─────────────────────────── -->
+    <section class="gk-section">
+      <div class="gk-container atrium-craft">
+        <div class="atrium-craft__plate" aria-hidden="true">
+          <span class="atrium-craft__plate-mark">十</span>
+        </div>
+        <div>
+          <div class="gk-section__num">§ 03 · Method</div>
+          <h2 class="gk-section__title" style="margin-top: 12px;">The <em>cross</em> at the centre.</h2>
+          <p style="font-size: var(--fs-md); line-height: var(--lh-loose); color: var(--fg-2); margin-top: var(--space-5); max-width: 50ch;">
+            Every Atrium artifact is built around an axis that the eye returns to: a column rule, a hairline below the masthead, the line where ornament ends and content begins. Decide where that line is before you decide anything else, and the page composes itself.
+          </p>
+          <ul class="atrium-tier__list" style="margin-top: var(--space-6);">
+            <li>One serif for display, one humanist sans for body, one mono for instruments.</li>
+            <li>Champagne and copper, used the way a tea master uses gold leaf — rarely, deliberately.</li>
+            <li>Ma — negative space — treated as a structural member, not as leftover.</li>
+            <li>Section markers in mono. Numbers as instruments, not decoration.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── QUOTE ──────────────────────────────────────── -->
+    <section class="gk-section gk-section--tight">
+      <div class="gk-container gk-container--narrow">
+        <blockquote class="atrium-quote">
+          <p class="atrium-quote__body">
+            “The shape of the page is the bow you make to the reader before you've spoken a single word.”
+          </p>
+          <div class="atrium-quote__cite">— From the Atrium colophon</div>
+        </blockquote>
+      </div>
+    </section>
+
+    <!-- ── PRICING ────────────────────────────────────── -->
+    <section class="gk-section gk-section--bleed-2" id="pricing">
+      <div class="gk-container">
+        <header class="gk-section__head">
+          <div>
+            <div class="gk-section__num">§ 04 · Pricing</div>
+            <h2 class="gk-section__title">Three ways <em>to enter.</em></h2>
+          </div>
+          <p class="gk-section__subtitle">
+            All tiers ship every template, every register, every revision. The difference is how much of the practice you want to bring with you, and how much you want us to bring to you.
+          </p>
+        </header>
+
+        <div class="atrium-pricing">
+          <div class="atrium-tier">
+            <div class="atrium-tier__name">— Foyer</div>
+            <div class="atrium-tier__price">$0<small>/ to start</small></div>
+            <p class="atrium-tier__line">Open the catalogue, read the manifesto, see if the practice fits the way you work.</p>
+            <ul class="atrium-tier__list">
+              <li>Two soul templates</li>
+              <li>One cockpit template</li>
+              <li>Tokens file, read-only</li>
+              <li>Community correspondence</li>
+            </ul>
+            <a href="#" class="gk-cta gk-cta--ghost" style="width: 100%; justify-content: center;">Begin</a>
+          </div>
+          <div class="atrium-tier atrium-tier--accent">
+            <div class="atrium-tier__name">— Atelier · most chosen</div>
+            <div class="atrium-tier__price">$24<small>/ month</small></div>
+            <p class="atrium-tier__line">The full catalogue, both registers, the discipline that holds them together. For one practitioner.</p>
+            <ul class="atrium-tier__list">
+              <li>Every template, every register</li>
+              <li>Tokens — full edit access</li>
+              <li>Quarterly practice notes</li>
+              <li>Direct correspondence with the studio</li>
+            </ul>
+            <a href="#" class="gk-cta" style="width: 100%; justify-content: center;">Enter <span class="gk-cta__arrow">→</span></a>
+          </div>
+          <div class="atrium-tier">
+            <div class="atrium-tier__name">— Studio</div>
+            <div class="atrium-tier__price">$120<small>/ month</small></div>
+            <p class="atrium-tier__line">For small teams that want a shared house style. Custom token forks, named registers, the studio on call.</p>
+            <ul class="atrium-tier__list">
+              <li>Up to ten practitioners</li>
+              <li>Custom token forks</li>
+              <li>Named registers (your house)</li>
+              <li>Quarterly review with the studio</li>
+            </ul>
+            <a href="#" class="gk-cta gk-cta--ghost" style="width: 100%; justify-content: center;">Inquire</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FAQ ────────────────────────────────────────── -->
+    <section class="gk-section">
+      <div class="gk-container">
+        <header class="gk-section__head">
+          <div>
+            <div class="gk-section__num">§ 05 · Questions</div>
+            <h2 class="gk-section__title">A few <em>worth answering.</em></h2>
+          </div>
+          <p class="gk-section__subtitle">
+            Honest, considered answers to the questions that come up most often. If yours isn't here, the studio is on the other end of the correspondence card below.
+          </p>
+        </header>
+
+        <div>
+          <div class="atrium-faq__row">
+            <div class="atrium-faq__num">— 01</div>
+            <div class="atrium-faq__q">Is this a Japanese design system?</div>
+            <div class="atrium-faq__a">
+              No. It's a system <em>influenced by</em> Japanese craft sensibility — restraint, ma, deliberateness — applied to ordinary western artifacts. The serif is Cormorant Garamond, not a Mincho. The discipline is in what we leave out.
+            </div>
+          </div>
+          <div class="atrium-faq__row">
+            <div class="atrium-faq__num">— 02</div>
+            <div class="atrium-faq__q">Can I use this for client work?</div>
+            <div class="atrium-faq__a">
+              Yes, on the Atelier and Studio tiers. Treat the templates as starting points, not finished pieces. Replace the words, retune the tokens to your client's brand, ship the result. Attribution appreciated, never required.
+            </div>
+          </div>
+          <div class="atrium-faq__row">
+            <div class="atrium-faq__num">— 03</div>
+            <div class="atrium-faq__q">Why so much restraint?</div>
+            <div class="atrium-faq__a">
+              Because the world has enough loud documents in it. The work most worth making is the work that earns attention slowly — and that requires a frame quiet enough to let the content carry the weight.
+            </div>
+          </div>
+          <div class="atrium-faq__row">
+            <div class="atrium-faq__num">— 04</div>
+            <div class="atrium-faq__q">How does it look in dark mode?</div>
+            <div class="atrium-faq__a">
+              The genkan register has a dark variant — graphite background, warm metals brought up to AAA contrast, body text on cream. Set <code>data-mode="dark"</code> on any container; the tokens carry the rest.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── FOOTER ───────────────────────────────────────── -->
+  <footer class="gk-footer">
+    <div class="gk-container">
+      <div class="gk-footer__inner">
+        <div>
+          <div class="gk-footer__brand">Atrium</div>
+          <p style="margin-top: var(--space-3); font-size: var(--fs-sm); color: var(--fg-2); line-height: var(--lh-loose); max-width: 36ch;">
+            A small atelier of templates and disciplines for people who care how their work looks before they show it to anyone.
+          </p>
+        </div>
+        <div class="gk-footer__col">
+          <h4>Catalogue</h4>
+          <ul>
+            <li><a href="#">Threshold</a></li>
+            <li><a href="#">Hearth</a></li>
+            <li><a href="#">Folio</a></li>
+            <li><a href="#">Vellum</a></li>
+            <li><a href="#">Bastion</a></li>
+          </ul>
+        </div>
+        <div class="gk-footer__col">
+          <h4>Practice</h4>
+          <ul>
+            <li><a href="#">Manifesto</a></li>
+            <li><a href="#">Tokens</a></li>
+            <li><a href="#">Method</a></li>
+            <li><a href="#">Colophon</a></li>
+          </ul>
+        </div>
+        <div class="gk-footer__col">
+          <h4>Studio</h4>
+          <ul>
+            <li><a href="#">Correspondence</a></li>
+            <li><a href="#">Subscribe</a></li>
+            <li><a href="#">Press kit</a></li>
+            <li><a href="#">Privacy</a></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="gk-footer__rule">
+      <div class="gk-footer__meta">
+        <div>© 2026 Atrium · Set in Cormorant Garamond, Inter & JetBrains Mono</div>
+        <div>Vol I · 04.30 · 0142</div>
+      </div>
+    </div>
+  </footer>
+
+</div>
+</body>
+</html>

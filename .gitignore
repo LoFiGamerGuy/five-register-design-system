@@ -1,0 +1,25 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor folders
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Node (in case anyone adds a build step later — though we're keeping no-build)
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build outputs (none expected, but defensive)
+dist/
+build/
+.cache/
+
+# Local environment
+.env
+.env.local

@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hearth — Soul-Layer Document Template</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="base.css">
+<style>
+  .document { max-width: 1080px; margin: 0 auto; padding: var(--space-9) var(--space-7); }
+  .doc-grid { display: grid; grid-template-columns: 1fr 200px; gap: var(--space-7); align-items: start; }
+  @media (max-width: 900px) { .doc-grid { grid-template-columns: 1fr; gap: var(--space-3); } .marginalia { border-top: 1px solid var(--rule); padding-top: var(--space-3); } }
+  .marginalia {
+    font-family: var(--font-display); font-style: italic; font-size: var(--fs-sm);
+    line-height: var(--lh-normal); color: var(--fg-3);
+    position: sticky; top: var(--space-5);
+  }
+  .marginalia .eyebrow { font-style: normal; margin-bottom: var(--space-2); display: block; }
+  .doc-toc { margin: var(--space-7) 0; padding: var(--space-5) 0; border-top: 1px solid var(--fg); border-bottom: 1px solid var(--rule); }
+  .doc-toc__list { columns: 2; column-gap: var(--space-7); font-family: var(--font-mono); font-size: var(--fs-sm); }
+  .doc-toc__list li { display: flex; justify-content: space-between; padding: var(--space-2) 0; border-bottom: 1px dotted var(--rule); break-inside: avoid; }
+  .doc-toc__list li::before { content: none; }
+  .doc-toc__list a:hover { color: var(--accent-2); }
+  .footnote { font-family: var(--font-display); font-style: italic; font-size: var(--fs-sm); color: var(--fg-3); line-height: var(--lh-normal); padding-left: var(--space-4); border-left: 1px solid var(--rule); }
+  sup.fn-ref { color: var(--accent-2); font-family: var(--font-mono); font-size: 0.7em; font-style: normal; }
+  .section-num { font-family: var(--font-mono); font-size: var(--fs-sm); color: var(--accent-2); letter-spacing: var(--tracking-caps); text-transform: uppercase; display: block; margin-bottom: var(--space-2); }
+  .drop::first-letter { font-family: var(--font-display); font-weight: 400; font-style: italic; font-size: 5em; line-height: 0.85; float: left; margin: 0.05em 0.1em 0 -0.02em; color: var(--copper); }
+</style>
+</head>
+<body>
+
+<article class="document">
+
+  <header class="masthead">
+    <div class="masthead__brand">Hearth <span style="font-style: normal; color: var(--fg-3);">— a working paper</span></div>
+    <div class="masthead__meta">Vol. 01 · No. 02 · Apr 2026</div>
+  </header>
+
+  <div style="margin-bottom: var(--space-8);">
+    <div class="eyebrow eyebrow--accent" style="margin-bottom: var(--space-4);">Threshold series · No. 02</div>
+    <h1 class="display" style="font-size: clamp(48px, 7vw, 92px); margin-bottom: var(--space-5); font-style: italic; font-weight: 300;">
+      On the <span class="accent-2">economy</span><br>
+      of well-made<br>
+      objects.
+    </h1>
+    <p class="lead" style="max-width: 60ch;">
+      A short essay on why a small set of decisions, made once and applied everywhere, returns more than its weight in attention.
+    </p>
+    <div class="row" style="margin-top: var(--space-6); gap: var(--space-7);">
+      <div><div class="eyebrow">Author</div><div class="small" style="color: var(--fg); margin-top: 4px;">Your Name</div></div>
+      <div><div class="eyebrow">Reading time</div><div class="small" style="color: var(--fg); margin-top: 4px;">~ 8 minutes</div></div>
+      <div><div class="eyebrow">Status</div><div class="small" style="color: var(--fg); margin-top: 4px;">Draft 03</div></div>
+    </div>
+  </div>
+
+  <nav class="doc-toc">
+    <div class="eyebrow" style="margin-bottom: var(--space-4);">Contents</div>
+    <ul class="doc-toc__list">
+      <li><a href="#s1">§ 1 — Premise</a><span>p. 01</span></li>
+      <li><a href="#s2">§ 2 — Method</a><span>p. 02</span></li>
+      <li><a href="#s3">§ 3 — In practice</a><span>p. 04</span></li>
+      <li><a href="#s4">§ 4 — Objections</a><span>p. 06</span></li>
+      <li><a href="#s5">§ 5 — Closing</a><span>p. 07</span></li>
+      <li><a href="#notes">Notes &amp; references</a><span>p. 08</span></li>
+    </ul>
+  </nav>
+
+  <section id="s1" class="doc-grid" style="margin-top: var(--space-8);">
+    <div class="prose">
+      <span class="section-num">§ 1 — Premise</span>
+      <h2 class="h2">The page is a contract.</h2>
+      <p class="lead drop" style="font-style: italic; font-weight: 300;">
+        Every document you send into the world makes a small promise to its reader: that the time they're about to spend was worth your time first. The shape of the page, before any word is read, is what makes that promise credible.
+      </p>
+      <p>
+        We tend to think of typography as decoration — a finishing pass after the writing is done. It is not. Typography is the part of the document that does the work <em>before</em> reading. It tells the reader how seriously to take what's coming, where to look first, how long this will take<sup class="fn-ref">[1]</sup>, and whether the author cared enough to think about any of it.
+      </p>
+      <p>
+        A well-set page can carry mediocre prose. A poorly-set page sabotages excellent prose. The proportion is not equal — but the lesson is.
+      </p>
+    </div>
+    <aside class="marginalia">
+      <span class="eyebrow">A note</span>
+      The drop cap is a tell. Reserve it for the opening paragraph; it loses its meaning if used twice.
+    </aside>
+  </section>
+
+  <blockquote class="pullquote" style="text-align: center; max-width: var(--measure); margin-left: auto; margin-right: auto;">
+    "The page is a small room. The masthead is its threshold, the columns its floor. A reader who feels lost in your document is a reader who left."
+    <cite>— field notes, vol. 4</cite>
+  </blockquote>
+
+  <section id="s2" class="doc-grid">
+    <div class="prose">
+      <span class="section-num">§ 2 — Method</span>
+      <h2 class="h2">Decisions, made once.</h2>
+      <p>
+        The system makes six decisions on your behalf. They are deliberately few. Each is conservative on its own, opinionated only in combination.
+      </p>
+      <ol>
+        <li><strong>One serif, one humanist sans, one mono.</strong> Cormorant Garamond for display, Inter for body, JetBrains Mono for instruments.</li>
+        <li><strong>Two metals, used as gold leaf.</strong> Champagne for restraint, copper for moments of warmth. Never both at once.</li>
+        <li><strong>A 4px grid.</strong> Every margin, gap, and pad is a multiple of 4.</li>
+        <li><strong>A 66-character measure.</strong> Body copy is set to a column that maximizes return on each saccade.</li>
+        <li><strong>Hairlines, not boxes.</strong> Structure is one-pixel rules; never enclosures.</li>
+        <li><strong>Sumi on bone.</strong> The background is a warm cream that signals patience.</li>
+      </ol>
+      <div class="aside">
+        <div class="aside__label">Aside</div>
+        <p>If you find yourself reaching for a seventh decision, treat the urge with suspicion. Most additions reduce yield.</p>
+      </div>
+    </div>
+    <aside class="marginalia">
+      <span class="eyebrow">Reference</span>
+      Tokens live in <code class="mono" style="font-style: normal;">tokens.css</code>. Edit one variable; every artifact updates.
+    </aside>
+  </section>
+
+  <section id="s3" style="margin-top: var(--space-8);">
+    <div style="max-width: var(--measure); margin: 0 auto;">
+      <span class="section-num">§ 3 — In practice</span>
+      <h2 class="h2">Anatomy of a paragraph.</h2>
+      <p style="font-size: var(--fs-md); line-height: var(--lh-loose); color: var(--fg); margin-top: var(--space-5);">
+        A paragraph is set in Inter at fifteen pixels with a line height of 1.5 and a column near sixty-six characters. Dense enough to feel substantial. Loose enough to invite a long stay.
+      </p>
+
+      <h3 class="h3" style="margin-top: var(--space-7);">A code block, when needed.</h3>
+      <p style="font-size: var(--fs-md); line-height: var(--lh-loose); color: var(--fg); margin-top: var(--space-4);">
+        Code inherits charred-cedar dark and a copper rule on the leading edge. Small signals that say <em>read this part differently</em>.
+      </p>
+<pre><code><span class="tk-cmt">// tokens.css — the only file you should ever edit to retune the system.</span>
+<span class="tk-key">:root</span> {
+  <span class="tk-key">--bone</span>:      <span class="tk-str">#F2EDE3</span>;  <span class="tk-cmt">// warm paper, never white</span>
+  <span class="tk-key">--sumi</span>:      <span class="tk-str">#1A1714</span>;  <span class="tk-cmt">// warm near-black ink</span>
+  <span class="tk-key">--champagne</span>: <span class="tk-str">#B89B6E</span>;  <span class="tk-cmt">// restraint</span>
+  <span class="tk-key">--copper</span>:    <span class="tk-str">#A85A2C</span>;  <span class="tk-cmt">// warmth, used rarely</span>
+  <span class="tk-key">--measure</span>:   <span class="tk-num">66ch</span>;
+}</code></pre>
+
+      <h3 class="h3" style="margin-top: var(--space-7);">A table, when needed.</h3>
+      <table class="table">
+        <thead><tr><th>Token</th><th>Value</th><th>Used for</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">--space-4</td><td class="num">16px</td><td>Default gap between siblings</td></tr>
+          <tr><td class="mono">--space-6</td><td class="num">32px</td><td>Section padding, aside margin</td></tr>
+          <tr><td class="mono">--space-8</td><td class="num">64px</td><td>Major section breaks</td></tr>
+          <tr><td class="mono">--measure</td><td class="num">66ch</td><td>Reading column width</td></tr>
+        </tbody>
+      </table>
+      <div class="aside" style="border-color: var(--copper);">
+        <div class="aside__label" style="color: var(--copper);">Note</div>
+        <p>Tables earn their keep when the reader needs to compare values across rows. If a table has only one column of data, it should be a list instead.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="s4" style="margin-top: var(--space-9);">
+    <div style="max-width: var(--measure-wide); margin: 0 auto;">
+      <span class="section-num">§ 4 — Objections</span>
+      <h2 class="h2" style="margin-bottom: var(--space-6);">Three you'll hear, and the answers.</h2>
+      <div class="grid grid--3">
+        <div class="stat">
+          <div class="eyebrow eyebrow--accent">Objection 01</div>
+          <h4 class="h4" style="margin-top: var(--space-3);">Templates feel rigid.</h4>
+          <p class="body" style="margin-top: var(--space-3);">A system is a starting point, not a cage. The rules you keep most often are the ones you have considered breaking.</p>
+        </div>
+        <div class="stat">
+          <div class="eyebrow eyebrow--accent">Objection 02</div>
+          <h4 class="h4" style="margin-top: var(--space-3);">My work is too varied.</h4>
+          <p class="body" style="margin-top: var(--space-3);">A good system is a vocabulary, not a script. The same words assemble different sentences. Variety lives in the content.</p>
+        </div>
+        <div class="stat">
+          <div class="eyebrow eyebrow--accent">Objection 03</div>
+          <h4 class="h4" style="margin-top: var(--space-3);">It looks the same every time.</h4>
+          <p class="body" style="margin-top: var(--space-3);">Yes. That is the point. After the third document, the reader recognizes the work before they read it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule--ornament">
+
+  <section id="s5">
+    <div class="prose" style="margin: 0 auto;">
+      <span class="section-num">§ 5 — Closing</span>
+      <h2 class="h2">A short defense of finishing.</h2>
+      <p>
+        Everything in this template is recoverable. You can ignore the system, override the variables, abandon the column. The system is not the work; the system is what lets the work be the work.
+      </p>
+      <p>
+        Use it when you want to stop deciding. Edit it when you want to decide differently. And when something genuinely does not fit — break it, and write down why. That is how the system gets better.
+      </p>
+    </div>
+  </section>
+
+  <section id="notes" style="margin-top: var(--space-9);">
+    <div class="prose" style="margin: 0 auto;">
+      <h3 class="h4" style="font-family: var(--font-mono); font-size: var(--fs-2xs); text-transform: uppercase; letter-spacing: var(--tracking-caps); color: var(--fg-3); border-bottom: 1px solid var(--fg); padding-bottom: var(--space-2); margin-bottom: var(--space-4); font-weight: 400;">Notes &amp; references</h3>
+      <div class="footnote">
+        <p><sup class="fn-ref">[1]</sup> The reading-time estimate above is generated from word count at 220 wpm — the median for considered, non-skimming reading on a screen.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer class="colophon">
+    <span>Set in Cormorant Garamond, Inter &amp; JetBrains Mono</span>
+    <span>Hearth · Soul Register · v1</span>
+  </footer>
+
+</article>
+
+</body>
+</html>

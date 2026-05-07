@@ -1,0 +1,266 @@
+/* ============================================================
+   VESPER — slow ritual evening register
+   The designer's evening prayer; the studio's chapbook.
+
+   Composition rules:
+     · Single column, narrow measure (42ch).
+     · Five movements; one credo each. White-space (black-space)
+       between movements is non-negotiable.
+     · Display CARDO ITALIC at colossal scale — slightly more
+       candlelit than Cormorant; long ascenders.
+     · Body Cormorant Garamond, regular weight, optical-reading
+       at 18–20px, line-height 1.8, slight positive tracking.
+     · Champagne-deep is the held note; pearl-white is reserved
+       for the line that asks to be looked at.
+     · Numbered movements (i, ii, iii…) in lower-roman.
+     · Caesurae are minimal: a single rule, a single dot.
+
+   Activate: data-register="vesper"
+   Components prefixed .ve-*
+   ============================================================ */
+
+@import url('base.css');
+
+[data-register="vesper"] {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-feature-settings: "kern", "liga", "dlig", "calt", "onum";
+  /* a low candle in the room — the page warms toward the centre */
+  background-image:
+    radial-gradient(ellipse 70% 50% at 50% 30%,
+      color-mix(in oklab, var(--aubergine-2) 100%, transparent) 0%,
+      var(--aubergine) 65%);
+  background-attachment: fixed;
+}
+
+::selection { background: var(--champagne-soft); color: var(--pearl); }
+
+/* ── Stage / page ───────────────────────────────────── */
+.ve-stage {
+  min-height: 100vh;
+  padding: var(--space-9) 0 var(--space-11);
+}
+.ve-page {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 var(--space-7);
+}
+
+/* ── Cartouche ──────────────────────────────────────── */
+.ve-cartouche {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: var(--space-5);
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: var(--space-9);
+}
+.ve-cartouche__mark {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--fs-md);
+  color: var(--bone);
+  letter-spacing: 0.02em;
+}
+.ve-cartouche__rule {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    var(--rule) 0%,
+    var(--champagne-deep) 50%,
+    var(--rule) 100%);
+}
+.ve-cartouche__meta {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--bone-3);
+  text-align: right;
+  line-height: 1.7;
+}
+.ve-cartouche__meta b { color: var(--bone); font-weight: 400; }
+
+/* ── Frontispiece — opening — */
+.ve-frontis {
+  text-align: center;
+  margin: var(--space-9) 0 var(--space-11);
+}
+.ve-frontis__eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
+  color: var(--champagne-deep);
+  margin-bottom: var(--space-7);
+}
+.ve-frontis__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(80px, 16vw, 240px);
+  line-height: 0.92;
+  letter-spacing: -0.04em;
+  color: var(--bone);
+  text-wrap: balance;
+}
+.ve-frontis__title em { color: var(--champagne-deep); font-style: italic; }
+.ve-frontis__title b { color: var(--pearl); font-style: italic; font-weight: 400; }
+.ve-frontis__by {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-md);
+  color: var(--bone-2);
+  margin-top: var(--space-7);
+  letter-spacing: 0.03em;
+}
+
+/* ── Movement ───────────────────────────────────────── */
+.ve-movement { margin: var(--space-11) 0; }
+
+.ve-movement__num {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: var(--fs-md);
+  color: var(--champagne-deep);
+  letter-spacing: 0.4em;
+  text-transform: lowercase;
+  margin-bottom: var(--space-6);
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+.ve-movement__num::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--rule);
+}
+
+.ve-movement__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(48px, 8vw, 96px);
+  line-height: 1.0;
+  letter-spacing: -0.025em;
+  color: var(--bone);
+  margin-bottom: var(--space-7);
+  text-wrap: balance;
+}
+.ve-movement__title em { color: var(--champagne-deep); }
+.ve-movement__title b { color: var(--pearl); font-weight: 400; font-style: italic; }
+
+.ve-movement__body p {
+  font-family: var(--font-body);
+  font-size: 19px;
+  line-height: 1.85;
+  color: var(--bone);
+  letter-spacing: 0.005em;
+  text-wrap: pretty;
+  margin-bottom: var(--space-5);
+  max-width: 42ch;
+}
+.ve-movement__body p + p { text-indent: 1.6em; margin-top: -8px; }
+.ve-movement__body p em { font-style: italic; color: var(--pearl); }
+.ve-movement__body p strong { font-weight: 500; color: var(--bone); }
+
+/* ── Held line — a credo set alone, larger ───────── */
+.ve-credo {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(28px, 4.6vw, 48px);
+  line-height: 1.2;
+  color: var(--pearl);
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  max-width: 26ch;
+  margin: var(--space-8) 0;
+  padding-left: var(--space-5);
+  border-left: 1px solid var(--champagne-deep);
+}
+.ve-credo em { color: var(--champagne-deep); }
+
+/* ── Caesura ────────────────────────────────────── */
+.ve-caesura {
+  text-align: center;
+  margin: var(--space-9) 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: 0.8em;
+  color: var(--champagne-deep);
+}
+
+/* ── Closing ────────────────────────────────────── */
+.ve-close {
+  margin-top: var(--space-10);
+  padding-top: var(--space-7);
+  border-top: 1px solid var(--rule);
+}
+.ve-close__amen {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(56px, 8vw, 96px);
+  line-height: 1.0;
+  color: var(--pearl);
+  letter-spacing: -0.025em;
+  margin-bottom: var(--space-6);
+}
+.ve-close__sig {
+  font-family: var(--font-mono);
+  font-size: var(--fs-2xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--bone-3);
+  line-height: 1.9;
+}
+.ve-close__sig b { color: var(--bone); font-weight: 400; }
+.ve-close__sig em {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: var(--fs-md);
+  letter-spacing: var(--tracking-tight);
+  text-transform: none;
+  color: var(--champagne-deep);
+}
+
+.ve-colophon {
+  margin-top: var(--space-9);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--rule-faint);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: var(--fs-3xs);
+  letter-spacing: var(--tracking-caps);
+  text-transform: uppercase;
+  color: var(--bone-3);
+}
+
+/* ── Slow entrance — light coming up ─────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .ve-frontis__title, .ve-movement__title, .ve-credo, .ve-movement__body p {
+    animation: ve-rise var(--dur-slow) var(--ease) both;
+  }
+  .ve-movement__body p:nth-child(2) { animation-delay: 120ms; }
+  .ve-movement__body p:nth-child(3) { animation-delay: 240ms; }
+  .ve-movement__body p:nth-child(4) { animation-delay: 360ms; }
+}
+@keyframes ve-rise {
+  from { opacity: 0; transform: translateY(10px); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+
+@media print {
+  [data-register="vesper"] { background: var(--aubergine) !important; }
+  .ve-frontis__title, .ve-movement__title, .ve-credo, .ve-movement__body p {
+    animation: none !important;
+  }
+}
